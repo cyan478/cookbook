@@ -156,7 +156,48 @@ textarea:focus{border-color:var(--text-primary)}
 .empty-icon{font-size:32px;margin-bottom:10px}
 .empty-text{font-size:13px}
 
+/* ── HOME FEED ── */
+.home-hero{margin-bottom:28px}
+.browse-all-cta{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;margin-bottom:32px;text-decoration:none;color:inherit}
+.browse-all-cta:hover{border-color:#b8b4ae;box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+.browse-all-left{display:flex;flex-direction:column;gap:2px}
+.browse-all-title{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.browse-all-sub{font-size:12px;color:var(--text-secondary)}
+.browse-all-arrow{font-size:18px;color:var(--text-tertiary);transition:transform .15s}
+.browse-all-cta:hover .browse-all-arrow{transform:translateX(3px)}
+
+.home-section{margin-bottom:36px}
+.home-section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;gap:12px}
+.home-section-title{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.home-section-sub{font-size:11px;color:var(--text-tertiary);margin-top:2px;font-weight:400}
+.home-see-all{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;white-space:nowrap;padding:2px 0}
+.home-see-all:hover{text-decoration:underline}
+
+.h-scroll{position:relative}
+.h-scroll-viewport{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.h-scroll-viewport::-webkit-scrollbar{height:4px}
+.h-scroll-viewport::-webkit-scrollbar-track{background:transparent}
+.h-scroll-viewport::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.h-scroll-card{flex:0 0 260px;scroll-snap-align:start}
+.h-scroll-card .recipe-card{height:100%}
+.h-scroll-fade{position:absolute;top:0;right:0;bottom:8px;width:40px;background:linear-gradient(to left, var(--bg), transparent);pointer-events:none;z-index:2}
+
+.h-scroll-nav{display:none;position:absolute;top:40%;transform:translateY(-50%);z-index:3;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);font-size:16px;color:var(--text-secondary);transition:all .15s}
+.h-scroll-nav:hover{background:var(--bg);color:var(--text-primary)}
+.h-scroll-nav.prev{left:-14px}
+.h-scroll-nav.next{right:-14px}
+.h-scroll:hover .h-scroll-nav{display:flex}
+@media(max-width:640px){.h-scroll-nav{display:none !important}}
+
+.browse-view-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+.browse-back{font-size:13px;color:var(--accent);cursor:pointer;background:none;border:none;font-family:inherit;font-weight:500;padding:0}
+.browse-back:hover{text-decoration:underline}
+
 @media(max-width:640px){
+  .h-scroll-card{flex:0 0 220px}
+  .browse-all-cta{padding:14px 16px}
+  .browse-all-title{font-size:14px}
+  .home-section-title{font-size:15px}
   header{padding:12px 16px}main{padding:20px 16px}
   .header-inner{flex-direction:column;align-items:flex-start}
   .tab{padding:5px 10px;font-size:11px}
@@ -191,61 +232,79 @@ textarea:focus{border-color:var(--text-primary)}
 
 <!-- ══════════ RECIPES TAB ══════════ -->
 <div id="tab-recipes">
-  <!-- Category tabs -->
-  <div class="cat-tabs">
-    <button class="cat-tab active" onclick="showRecipeCat('meat',this)">🍗 Meat &amp; Fish</button>
-    <button class="cat-tab" onclick="showRecipeCat('vegetable',this)">🥬 Vegetable</button>
-    <button class="cat-tab" onclick="showRecipeCat('carb',this)">🍜 Carb-Based</button>
-    <button class="cat-tab" onclick="showRecipeCat('dessert',this)">🍮 Desserts</button>
+  <!-- HOME FEED VIEW -->
+  <div id="recipe-home-view">
+    <!-- Browse all CTA -->
+    <div class="browse-all-cta" onclick="showBrowseAll()">
+      <div class="browse-all-left">
+        <div class="browse-all-title">Browse all 75 recipes →</div>
+        <div class="browse-all-sub">Filter by category, cuisine, difficulty, and more</div>
+      </div>
+      <div class="browse-all-arrow">→</div>
+    </div>
+    <!-- Home sections will be injected here -->
+    <div id="home-sections"></div>
   </div>
 
-  <!-- Meat filters -->
-  <div id="filters-meat" class="filter-row">
-    <button class="filter-btn active" onclick="filterRecipes('meat','all',this)">All</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','Chinese',this)">Chinese</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','Korean',this)">Korean</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','Japanese',this)">Japanese</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','Mediterranean',this)">Mediterranean</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','American',this)">American</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','chicken',this)">Chicken Only</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','fish',this)">Fish Only</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','baked',this)">🫙 Baked</button>
-    <button class="filter-btn" onclick="filterRecipes('meat','easy',this)">⚡ Easy</button>
+  <!-- BROWSE ALL VIEW -->
+  <div id="recipe-browse-view" style="display:none">
+    <div class="browse-view-header">
+      <div>
+        <div class="section-title" id="browse-title">All Recipes</div>
+        <div class="section-sub" id="recipe-count">75 recipes</div>
+      </div>
+      <button class="browse-back" onclick="showHomeFeed()">← Back to home</button>
+    </div>
+    <!-- Category tabs -->
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="showRecipeCat('meat',this)">🍗 Meat &amp; Fish</button>
+      <button class="cat-tab" onclick="showRecipeCat('vegetable',this)">🥬 Vegetable</button>
+      <button class="cat-tab" onclick="showRecipeCat('carb',this)">🍜 Carb-Based</button>
+      <button class="cat-tab" onclick="showRecipeCat('dessert',this)">🍮 Desserts</button>
+    </div>
+    <!-- Meat filters -->
+    <div id="filters-meat" class="filter-row">
+      <button class="filter-btn active" onclick="filterRecipes('meat','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','Chinese',this)">Chinese</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','Korean',this)">Korean</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','Japanese',this)">Japanese</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','Mediterranean',this)">Mediterranean</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','American',this)">American</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','chicken',this)">Chicken Only</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','fish',this)">Fish Only</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','baked',this)">🫙 Baked</button>
+      <button class="filter-btn" onclick="filterRecipes('meat','easy',this)">⚡ Easy</button>
+    </div>
+    <!-- Vegetable filters -->
+    <div id="filters-vegetable" class="filter-row" style="display:none">
+      <button class="filter-btn active" onclick="filterRecipes('vegetable','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','Chinese',this)">Chinese</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','Korean',this)">Korean</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','Mediterranean',this)">Mediterranean</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','easy',this)">⚡ Easy</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','baked',this)">🫙 Baked</button>
+      <button class="filter-btn" onclick="filterRecipes('vegetable','hair',this)">💇 Hair</button>
+    </div>
+    <!-- Carb filters -->
+    <div id="filters-carb" class="filter-row" style="display:none">
+      <button class="filter-btn active" onclick="filterRecipes('carb','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','udon',this)">Udon</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','noodles',this)">Noodles</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','rice',this)">Rice</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','Chinese',this)">Chinese</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','Korean',this)">Korean</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','Japanese',this)">Japanese</button>
+      <button class="filter-btn" onclick="filterRecipes('carb','easy',this)">⚡ Easy</button>
+    </div>
+    <!-- Dessert filters -->
+    <div id="filters-dessert" class="filter-row" style="display:none">
+      <button class="filter-btn active" onclick="filterRecipes('dessert','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('dessert','Chinese',this)">Chinese</button>
+      <button class="filter-btn" onclick="filterRecipes('dessert','Korean',this)">Korean</button>
+      <button class="filter-btn" onclick="filterRecipes('dessert','fruit',this)">Fruit-Based</button>
+    </div>
+    <div class="recipe-grid" id="recipe-grid"></div>
   </div>
-
-  <!-- Vegetable filters -->
-  <div id="filters-vegetable" class="filter-row" style="display:none">
-    <button class="filter-btn active" onclick="filterRecipes('vegetable','all',this)">All</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','Chinese',this)">Chinese</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','Korean',this)">Korean</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','Mediterranean',this)">Mediterranean</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','easy',this)">⚡ Easy</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','baked',this)">🫙 Baked</button>
-    <button class="filter-btn" onclick="filterRecipes('vegetable','hair',this)">💇 Hair</button>
-  </div>
-
-  <!-- Carb filters -->
-  <div id="filters-carb" class="filter-row" style="display:none">
-    <button class="filter-btn active" onclick="filterRecipes('carb','all',this)">All</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','udon',this)">Udon</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','noodles',this)">Noodles</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','rice',this)">Rice</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','Chinese',this)">Chinese</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','Korean',this)">Korean</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','Japanese',this)">Japanese</button>
-    <button class="filter-btn" onclick="filterRecipes('carb','easy',this)">⚡ Easy</button>
-  </div>
-
-  <!-- Dessert filters -->
-  <div id="filters-dessert" class="filter-row" style="display:none">
-    <button class="filter-btn active" onclick="filterRecipes('dessert','all',this)">All</button>
-    <button class="filter-btn" onclick="filterRecipes('dessert','Chinese',this)">Chinese</button>
-    <button class="filter-btn" onclick="filterRecipes('dessert','Korean',this)">Korean</button>
-    <button class="filter-btn" onclick="filterRecipes('dessert','fruit',this)">Fruit-Based</button>
-  </div>
-
-  <p class="section-label" id="recipe-count">Recipes</p>
-  <div class="recipe-grid" id="recipe-grid"></div>
 </div>
 
 <!-- ══════════ DRINKS TAB ══════════ -->
@@ -703,24 +762,63 @@ function getFilteredRecipes(cat, filter) {
 }
 
 // ══════════════════════════════════════════
-// RENDER RECIPES
+// HOME SECTIONS CONFIG
 // ══════════════════════════════════════════
-function renderRecipes(list) {
-  const grid = document.getElementById('recipe-grid');
-  document.getElementById('recipe-count').textContent = `${list.length} Recipe${list.length !== 1 ? 's' : ''}`;
-  if (!list.length) {
-    grid.innerHTML = '<div class="empty"><div class="empty-icon">🍽</div><div class="empty-text">No recipes match this filter</div></div>';
-    return;
+// Future-proof: sections are data-driven. Add/remove/reorder here.
+// Later: rotate based on dishes eaten (localStorage hook ready).
+const homeSections = [
+  {
+    id: 'protein',
+    title: 'Protein-forward',
+    sub: '30g+ per serving · hitting 120–140g daily',
+    filter: r => r.tags.includes('High Protein'),
+    browseCat: 'meat',
+    browseFilter: 'all'
+  },
+  {
+    id: 'iron',
+    title: 'Iron-forward',
+    sub: 'Hair health · iron, zinc, biotin rich',
+    filter: r => r.tags.includes('Iron') || r.tags.includes('Hair'),
+    browseCat: 'vegetable',
+    browseFilter: 'hair'
+  },
+  {
+    id: 'vegetable',
+    title: 'Vegetable medley',
+    sub: '99 Ranch greens · anti-inflammatory',
+    filter: r => r.cat === 'vegetable',
+    browseCat: 'vegetable',
+    browseFilter: 'all'
+  },
+  {
+    id: 'quick',
+    title: 'Quick & Easy',
+    sub: 'Under 20 min total · weeknight wins',
+    filter: r => {
+      if (!r.subTags.easy) return false;
+      const parseMin = s => parseInt(String(s).match(/\d+/)?.[0] || '0', 10);
+      const total = parseMin(r.time.prep) + parseMin(r.time.cook);
+      return total < 20;
+    },
+    browseCat: null, // custom — show filtered across all cats
+    browseFilter: 'quick'
   }
-  grid.innerHTML = list.map(r => {
-    const imgUrl = recipeImages[r.name];
-    const diffLabel = r.subTags.easy ? '⚡ Easy' : '🔸 Medium';
-    const diffClass = r.subTags.easy ? 'easy' : 'medium';
-    return `
+];
+
+// ══════════════════════════════════════════
+// RECIPE CARD RENDERER (reusable)
+// ══════════════════════════════════════════
+function recipeCardHTML(r) {
+  const imgUrl = recipeImages[r.name];
+  const diffLabel = r.subTags.easy ? '⚡ Easy' : '🔸 Medium';
+  const diffClass = r.subTags.easy ? 'easy' : 'medium';
+  const safeId = r.name.replace(/\W/g,'_') + Math.random().toString(36).slice(2,6);
+  return `
     <div class="recipe-card">
       <div class="recipe-img-wrap">
-        ${imgUrl ? `<img class="recipe-img" src="${imgUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none';document.getElementById('ph-${r.name.replace(/\W/g,'_')}').style.display='flex'">` : ''}
-        <div class="recipe-img-placeholder" id="ph-${r.name.replace(/\W/g,'_')}" style="${imgUrl?'display:none':'display:flex'}">${catEmoji[r.cat]||'🍽'}</div>
+        ${imgUrl ? `<img class="recipe-img" src="${imgUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="recipe-img-placeholder" style="${imgUrl?'display:none':'display:flex'}">${catEmoji[r.cat]||'🍽'}</div>
         <div class="recipe-img-overlay"></div>
         <span class="recipe-origin-overlay">${r.origin}</span>
       </div>
@@ -739,8 +837,138 @@ function renderRecipes(list) {
         <div class="recipe-source-text">via ${r.source}</div>
         <button class="visit-btn" onclick="openRecipe('${r.url}','${r.name.replace(/'/g,"\\'")}',this)">Find Recipe →</button>
       </div>
-    </div>
-  `}).join('');
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// HOME FEED RENDER
+// ══════════════════════════════════════════
+function renderHomeSections() {
+  const container = document.getElementById('home-sections');
+  if (!container) return;
+  container.innerHTML = homeSections.map(sec => {
+    const items = recipes.filter(sec.filter);
+    // Show up to 12, shuffle for variety
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
+    const list = shuffled.slice(0, 12);
+    if (!list.length) return '';
+    const viewportId = `hscroll-${sec.id}`;
+    return `
+      <div class="home-section">
+        <div class="home-section-header">
+          <div>
+            <div class="home-section-title">${sec.title}</div>
+            <div class="home-section-sub">${sec.sub}</div>
+          </div>
+          <button class="home-see-all" onclick="openSection('${sec.id}')">See more →</button>
+        </div>
+        <div class="h-scroll">
+          <button class="h-scroll-nav prev" aria-label="Scroll left" onclick="hScroll('${viewportId}', -1)">‹</button>
+          <button class="h-scroll-nav next" aria-label="Scroll right" onclick="hScroll('${viewportId}', 1)">›</button>
+          <div class="h-scroll-viewport" id="${viewportId}" tabindex="0" aria-label="${sec.title} recipes">
+            ${list.map(r => `<div class="h-scroll-card">${recipeCardHTML(r)}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function hScroll(viewportId, dir) {
+  const el = document.getElementById(viewportId);
+  if (!el) return;
+  el.scrollBy({ left: dir * 280, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// BROWSE ALL / HOME VIEW SWITCHING
+// ══════════════════════════════════════════
+function showHomeFeed() {
+  document.getElementById('recipe-home-view').style.display = '';
+  document.getElementById('recipe-browse-view').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showBrowseAll() {
+  document.getElementById('recipe-home-view').style.display = 'none';
+  document.getElementById('recipe-browse-view').style.display = '';
+  // Reset to meat/all
+  document.querySelectorAll('.cat-tab').forEach((b,i) => b.classList.toggle('active', i===0));
+  ['meat','vegetable','carb','dessert'].forEach((c,i) => {
+    document.getElementById(`filters-${c}`).style.display = i===0 ? 'flex' : 'none';
+    const row = document.getElementById(`filters-${c}`);
+    row.querySelectorAll('.filter-btn').forEach((b,j) => b.classList.toggle('active', j===0));
+  });
+  currentRecipeCat = 'meat';
+  currentRecipeFilter = 'all';
+  document.getElementById('browse-title').textContent = 'All Recipes';
+  renderRecipes(recipes);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openSection(sectionId) {
+  const sec = homeSections.find(s => s.id === sectionId);
+  if (!sec) return;
+  document.getElementById('recipe-home-view').style.display = 'none';
+  document.getElementById('recipe-browse-view').style.display = '';
+  
+  if (sectionId === 'quick') {
+    // Special: Quick & Easy spans all categories
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    ['meat','vegetable','carb','dessert'].forEach(c => {
+      document.getElementById(`filters-${c}`).style.display = 'none';
+    });
+    document.getElementById('browse-title').textContent = 'Quick & Easy';
+    const list = recipes.filter(sec.filter);
+    renderRecipes(list);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  
+  // Map to category tab + filter
+  const catMap = { protein: 'meat', iron: 'vegetable', vegetable: 'vegetable', quick: 'meat' };
+  const targetCat = sec.browseCat || 'meat';
+  currentRecipeCat = targetCat;
+  currentRecipeFilter = sec.browseFilter || 'all';
+  
+  // Update cat tabs
+  document.querySelectorAll('.cat-tab').forEach((btn,i) => {
+    const cats = ['meat','vegetable','carb','dessert'];
+    btn.classList.toggle('active', cats[i] === targetCat);
+  });
+  // Show correct filter row
+  ['meat','vegetable','carb','dessert'].forEach(c => {
+    document.getElementById(`filters-${c}`).style.display = c === targetCat ? 'flex' : 'none';
+  });
+  // Try to activate matching filter button, otherwise just "All"
+  const filterRow = document.getElementById(`filters-${targetCat}`);
+  let activated = false;
+  filterRow.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    if (!activated && b.textContent.toLowerCase().includes((sec.browseFilter || '').toLowerCase())) {
+      b.classList.add('active'); activated = true;
+    }
+  });
+  if (!activated) filterRow.querySelector('.filter-btn').classList.add('active');
+  
+  document.getElementById('browse-title').textContent = sec.title;
+  const list = recipes.filter(sec.filter);
+  renderRecipes(list);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// RENDER RECIPES (browse grid)
+// ══════════════════════════════════════════
+function renderRecipes(list) {
+  const grid = document.getElementById('recipe-grid');
+  const countEl = document.getElementById('recipe-count');
+  if (countEl) countEl.textContent = `${list.length} recipe${list.length !== 1 ? 's' : ''}`;
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🍽</div><div class="empty-text">No recipes match this filter</div></div>';
+    return;
+  }
+  grid.innerHTML = list.map(r => recipeCardHTML(r)).join('');
 }
 
 async function openRecipe(baseUrl, name, btn) {
@@ -929,7 +1157,9 @@ RESPOND ONLY WITH VALID JSON — no markdown, no backticks.
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
-renderRecipes(getFilteredRecipes('meat', 'all'));
+renderHomeSections();
+// Pre-render browse grid for instant switch
+renderRecipes(recipes);
 renderDrinks(drinks);
 renderFoods(foods);
 </script>
