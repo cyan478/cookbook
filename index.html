@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cookbook</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf8;--surface:#fff;--border:#e8e6e1;--border-light:#f0ede8;
+  --text-primary:#1a1a18;--text-secondary:#6b6b67;--text-tertiary:#a8a8a3;
+  --accent:#2d5016;--accent-light:#f0f4eb;
+  --r:12px;--rs:8px;
+}
+body{font-family:-apple-system,"SF Pro Text","SF Pro Display",BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.5;min-height:100vh}
+
+/* ── HEADER ── */
+header{padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.header-title{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.header-sub{font-size:11px;color:var(--text-tertiary);margin-top:1px}
+.tab-bar{display:flex;gap:2px;background:var(--bg);border-radius:10px;padding:3px;border:1px solid var(--border);flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:8px;border:none;background:transparent;font-size:12px;font-family:inherit;color:var(--text-secondary);cursor:pointer;transition:all .15s;font-weight:500;white-space:nowrap}
+.tab.active{background:var(--surface);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* ── MAIN ── */
+main{max-width:1100px;margin:0 auto;padding:28px 24px}
+.section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:14px}
+.section-title{font-size:18px;font-weight:600;letter-spacing:-.3px;margin-bottom:4px}
+.section-sub{font-size:12px;color:var(--text-secondary);margin-bottom:20px}
+
+/* ── RECIPE CATEGORY TABS ── */
+.cat-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--border)}
+.cat-tab{padding:10px 20px;border:none;background:transparent;font-size:13px;font-family:inherit;color:var(--text-tertiary);cursor:pointer;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap}
+.cat-tab.active{color:var(--text-primary);border-bottom-color:var(--text-primary)}
+.cat-tab:hover:not(.active){color:var(--text-secondary)}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-family:inherit;color:var(--text-secondary);cursor:pointer;transition:all .15s;font-weight:500}
+.filter-btn.active{background:var(--text-primary);color:#fff;border-color:var(--text-primary)}
+
+/* ── RECIPE GRID ── */
+.recipe-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:36px}
+.recipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;display:flex;flex-direction:column;cursor:pointer;position:relative}
+.recipe-card:hover{border-color:#b8b4ae;box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
+.recipe-img-wrap{position:relative;width:100%;padding-top:68%;overflow:hidden;background:var(--border-light)}
+.recipe-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.recipe-card:hover .recipe-img{transform:scale(1.05)}
+.recipe-img-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,#f0ede8 0%,#e8e4de 100%)}
+.recipe-img-overlay{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 100%);pointer-events:none}
+.recipe-origin-overlay{position:absolute;top:8px;right:8px;font-size:9px;font-weight:600;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.9);color:var(--text-secondary);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.6)}
+.recipe-card-body{padding:10px 12px 6px}
+.recipe-name{font-size:12px;font-weight:600;letter-spacing:-.1px;line-height:1.35;margin-bottom:6px;color:var(--text-primary)}
+.recipe-meta{display:flex;gap:4px;flex-wrap:wrap}
+.meta-pill{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-weight:500}
+.meta-pill.time{background:#f4f0e8;color:#7a5a1a}
+.meta-pill.easy{background:#e8f4f0;color:#1a5c4a}
+.meta-pill.medium{background:#f4f0e8;color:#8b6a2a}
+.meta-pill.dessert{background:#f4ebe8;color:#5c2d1a}
+.meta-pill.meat{background:#f4eae8;color:#6b2a1a}
+.meta-pill.veg{background:#e8f4ee;color:#1a5c35}
+.meta-pill.carb{background:#f0ede8;color:#5c4a1a}
+.recipe-mod{font-size:10px;color:#7a5a1a;background:#fdf6eb;border:1px solid #f0e4c8;border-radius:var(--rs);padding:6px 8px;margin-top:7px;line-height:1.5;display:none}
+.recipe-card:hover .recipe-mod{display:block}
+.recipe-footer{padding:6px 12px 10px;display:flex;align-items:center;justify-content:space-between}
+.recipe-source-text{font-size:9px;color:var(--text-tertiary)}
+.visit-btn{font-size:9px;color:var(--accent);font-weight:600;background:var(--accent-light);padding:3px 8px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.visit-btn:hover{background:#dcebd0}
+.visit-btn:disabled{opacity:.5;cursor:wait}
+
+/* ── DRINK CARDS ── */
+.drink-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:36px}
+.drink-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;cursor:default}
+.drink-card:hover{border-color:#b8b4ae;box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
+.drink-img-wrap{position:relative;width:100%;padding-top:68%;overflow:hidden;background:var(--border-light)}
+.drink-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.drink-card:hover .drink-img{transform:scale(1.05)}
+.drink-img-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,#f0ede8 0%,#e8e4de 100%)}
+.drink-cat-overlay{position:absolute;top:8px;right:8px;font-size:9px;font-weight:600;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.9);color:var(--text-secondary);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.6)}
+.drink-body{padding:10px 12px 6px}
+.drink-name{font-size:12px;font-weight:600;letter-spacing:-.1px;line-height:1.35;margin-bottom:6px}
+.drink-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.db-floral{background:#f4e8f4;color:#5c1a5c}
+.db-matcha{background:#e8f4e8;color:#1a5c1a}
+.db-fruit{background:#f4ede8;color:#7a3a1a}
+.db-milk{background:#e8eef4;color:#1a3a5c}
+.db-hojicha{background:#f4ede0;color:#7a5a1a}
+.db-blend{background:#f0e8f4;color:#4a1a5c}
+.db-coldbrew{background:#e8f0f4;color:#1a4a5c}
+.drink-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.drink-tag{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-weight:500}
+.drink-steps-toggle{font-size:10px;color:var(--accent);font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;display:block}
+.drink-steps-body{display:none;margin-top:8px;border-top:1px solid var(--border-light);padding-top:8px}
+.drink-steps-body.open{display:block}
+.steps-label{font-size:9px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.step{font-size:11px;color:var(--text-secondary);padding:4px 0;border-bottom:1px solid var(--border-light);line-height:1.5;display:flex;gap:7px}
+.step:last-child{border-bottom:none}
+.step-num{font-size:9px;font-weight:700;color:var(--text-tertiary);min-width:14px;margin-top:2px;flex-shrink:0}
+.drink-footer{padding:6px 12px 10px;font-size:9px;color:var(--text-tertiary)}
+
+/* ── FOOD GRID ── */
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:36px}
+.food-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color .15s}
+.food-card:hover{border-color:#c8c4be}
+.food-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.food-emoji{font-size:26px;line-height:1}
+.food-tag{font-size:9px;font-weight:600;letter-spacing:.5px;padding:3px 8px;border-radius:20px;text-transform:uppercase}
+.tp{background:#e8f0e8;color:#2d5016}.tv{background:#e8f4ee;color:#1a5c35}.tg{background:#f0ede8;color:#5c4a1a}.tf{background:#ede8f4;color:#3d1a5c}.tft{background:#f4e8f0;color:#5c1a4a}
+.food-name{font-size:14px;font-weight:600;letter-spacing:-.2px;margin-bottom:2px}
+.food-origin{font-size:11px;color:var(--text-tertiary);margin-bottom:8px}
+.food-why{font-size:12px;color:var(--text-secondary);line-height:1.5}
+.food-macros{display:flex;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light)}
+.macro{text-align:center;flex:1}
+.macro-val{font-size:13px;font-weight:600}
+.macro-label{font-size:9px;color:var(--text-tertiary);margin-top:1px}
+
+/* ── SCANNER ── */
+.scanner-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:20px}
+.upload-zone{border:1.5px dashed var(--border);border-radius:var(--r);padding:36px 20px;cursor:pointer;transition:all .15s;margin-bottom:14px;text-align:center}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-light)}
+#file-input{display:none}
+textarea{width:100%;border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-size:13px;font-family:inherit;color:var(--text-primary);background:var(--surface);resize:vertical;outline:none;transition:border-color .15s;min-height:72px}
+textarea:focus{border-color:var(--text-primary)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--text-primary);color:#fff}.btn-primary:hover{background:#333}
+.btn-secondary{background:var(--bg);color:var(--text-primary);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border-light)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.result-header{padding:14px 18px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center}
+.result-title{font-size:14px;font-weight:600}
+.result-badge{font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+.rb-e{background:#e8f0e8;color:#2d5016}.rb-d{background:#f4ebe8;color:#5c2d1a}
+.result-body{padding:14px 18px}
+.result-desc{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px}
+.ing-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ing-tag{font-size:11px;background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:20px;color:var(--text-secondary)}
+.result-mod{font-size:11px;color:#7a5a1a;background:#fdf6eb;border:1px solid #f0e4c8;border-radius:var(--rs);padding:8px 12px;line-height:1.6}
+.result-source{font-size:10px;color:var(--text-tertiary);padding:8px 18px;border-top:1px solid var(--border-light)}
+.loading{display:flex;flex-direction:column;align-items:center;padding:36px;color:var(--text-secondary);gap:10px}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text-primary);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.grocery-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:14px 18px;margin-bottom:18px}
+.grocery-label{font-size:9px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+
+/* ── RESOURCES ── */
+.resource-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;cursor:pointer;transition:border-color .15s}
+.resource-card:hover{border-color:#b8b4ae}
+.resource-name{font-size:14px;font-weight:600;margin-bottom:3px}
+.resource-url{font-size:11px;color:var(--accent);margin-bottom:8px}
+.resource-desc{font-size:12px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px}
+.resource-instructions{background:var(--bg);border-radius:var(--rs);padding:10px 14px;font-size:11px;color:var(--text-secondary);line-height:1.9;border:1px solid var(--border-light)}
+.resource-instructions strong{color:var(--text-primary)}
+.divider{height:1px;background:var(--border-light);margin:28px 0}
+.empty{text-align:center;padding:56px 20px;color:var(--text-tertiary)}
+.empty-icon{font-size:32px;margin-bottom:10px}
+.empty-text{font-size:13px}
+
+@media(max-width:640px){
+  header{padding:12px 16px}main{padding:20px 16px}
+  .header-inner{flex-direction:column;align-items:flex-start}
+  .tab{padding:5px 10px;font-size:11px}
+  .food-grid{grid-template-columns:1fr}
+  .recipe-card-body,.drink-body{padding:8px 10px 4px}
+  .recipe-footer,.drink-footer{padding:5px 10px 8px}
+  .recipe-name,.drink-name{font-size:11px}
+  .recipe-grid,.drink-grid{gap:8px}
+  .cat-tab{padding:8px 14px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-title">My Cookbook</div>
+      <div class="header-sub">Curated for your goals · 99 Ranch, Safeway & Trader Joe's friendly</div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab active" onclick="showTab('recipes')">Recipes</button>
+      <button class="tab" onclick="showTab('drinks')">Drinks</button>
+      <button class="tab" onclick="showTab('foods')">Ingredients</button>
+      <button class="tab" onclick="showTab('scanner')">Grocery Scanner</button>
+      <button class="tab" onclick="showTab('resources')">Resources</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════ RECIPES TAB ══════════ -->
+<div id="tab-recipes">
+  <!-- Category tabs -->
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="showRecipeCat('meat',this)">🍗 Meat &amp; Fish</button>
+    <button class="cat-tab" onclick="showRecipeCat('vegetable',this)">🥬 Vegetable</button>
+    <button class="cat-tab" onclick="showRecipeCat('carb',this)">🍜 Carb-Based</button>
+    <button class="cat-tab" onclick="showRecipeCat('dessert',this)">🍮 Desserts</button>
+  </div>
+
+  <!-- Meat filters -->
+  <div id="filters-meat" class="filter-row">
+    <button class="filter-btn active" onclick="filterRecipes('meat','all',this)">All</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','Chinese',this)">Chinese</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','Korean',this)">Korean</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','Japanese',this)">Japanese</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','Mediterranean',this)">Mediterranean</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','American',this)">American</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','chicken',this)">Chicken Only</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','fish',this)">Fish Only</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','baked',this)">🫙 Baked</button>
+    <button class="filter-btn" onclick="filterRecipes('meat','easy',this)">⚡ Easy</button>
+  </div>
+
+  <!-- Vegetable filters -->
+  <div id="filters-vegetable" class="filter-row" style="display:none">
+    <button class="filter-btn active" onclick="filterRecipes('vegetable','all',this)">All</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','Chinese',this)">Chinese</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','Korean',this)">Korean</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','Mediterranean',this)">Mediterranean</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','easy',this)">⚡ Easy</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','baked',this)">🫙 Baked</button>
+    <button class="filter-btn" onclick="filterRecipes('vegetable','hair',this)">💇 Hair</button>
+  </div>
+
+  <!-- Carb filters -->
+  <div id="filters-carb" class="filter-row" style="display:none">
+    <button class="filter-btn active" onclick="filterRecipes('carb','all',this)">All</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','udon',this)">Udon</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','noodles',this)">Noodles</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','rice',this)">Rice</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','Chinese',this)">Chinese</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','Korean',this)">Korean</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','Japanese',this)">Japanese</button>
+    <button class="filter-btn" onclick="filterRecipes('carb','easy',this)">⚡ Easy</button>
+  </div>
+
+  <!-- Dessert filters -->
+  <div id="filters-dessert" class="filter-row" style="display:none">
+    <button class="filter-btn active" onclick="filterRecipes('dessert','all',this)">All</button>
+    <button class="filter-btn" onclick="filterRecipes('dessert','Chinese',this)">Chinese</button>
+    <button class="filter-btn" onclick="filterRecipes('dessert','Korean',this)">Korean</button>
+    <button class="filter-btn" onclick="filterRecipes('dessert','fruit',this)">Fruit-Based</button>
+  </div>
+
+  <p class="section-label" id="recipe-count">Recipes</p>
+  <div class="recipe-grid" id="recipe-grid"></div>
+</div>
+
+<!-- ══════════ DRINKS TAB ══════════ -->
+<div id="tab-drinks" style="display:none">
+  <div class="filter-row" id="drink-filters">
+    <button class="filter-btn active" onclick="filterDrinks('all',this)">All</button>
+    <button class="filter-btn" onclick="filterDrinks('Floral Tea',this)">🌸 Floral Tea</button>
+    <button class="filter-btn" onclick="filterDrinks('Matcha',this)">🍵 Matcha</button>
+    <button class="filter-btn" onclick="filterDrinks('Hojicha',this)">🍂 Hojicha</button>
+    <button class="filter-btn" onclick="filterDrinks('Fruit Tea',this)">🍑 Fruit Tea</button>
+    <button class="filter-btn" onclick="filterDrinks('Milk Tea',this)">🥛 Milk Tea</button>
+    <button class="filter-btn" onclick="filterDrinks('Blend',this)">✨ Fusion</button>
+    <button class="filter-btn" onclick="filterDrinks('Cold Brew',this)">❄️ Cold Brew</button>
+  </div>
+  <p class="section-label">Homemade Drinks · No added sugar · Inspired by Molly Tea, DAMO & HeyTea</p>
+  <div class="drink-grid" id="drink-grid"></div>
+</div>
+
+<!-- ══════════ FOODS TAB ══════════ -->
+<div id="tab-foods" style="display:none">
+  <div class="filter-row" id="food-filters">
+    <button class="filter-btn active" onclick="filterFoods('all',this)">All</button>
+    <button class="filter-btn" onclick="filterFoods('Protein',this)">Protein</button>
+    <button class="filter-btn" onclick="filterFoods('Vegetable',this)">Vegetable</button>
+    <button class="filter-btn" onclick="filterFoods('Grain',this)">Grain</button>
+    <button class="filter-btn" onclick="filterFoods('Healthy Fat',this)">Healthy Fat</button>
+    <button class="filter-btn" onclick="filterFoods('Fruit',this)">Fruit</button>
+    <button class="filter-btn" onclick="filterFoods('hair',this)">💇 Hair</button>
+    <button class="filter-btn" onclick="filterFoods('recomposition',this)">💪 Recomp</button>
+  </div>
+  <p class="section-label">Ingredients</p>
+  <div class="food-grid" id="food-grid"></div>
+</div>
+
+<!-- ══════════ SCANNER TAB ══════════ -->
+<div id="tab-scanner" style="display:none">
+  <p class="section-label">Grocery Receipt Scanner</p>
+  <div class="scanner-box">
+    <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div style="font-size:30px;margin-bottom:10px">🧾</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">Upload your grocery receipt</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Take a photo or scan — I'll suggest what to cook</div>
+    </div>
+    <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+    <p style="font-size:12px;color:var(--text-tertiary);margin:12px 0 10px;text-align:center">Or type your ingredients manually</p>
+    <textarea id="manual-input" placeholder="e.g. chicken thighs, bok choy, shiitake, tofu, frozen udon, ginger, garlic, salmon..."></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-primary" id="scan-btn" onclick="generateRecipes()">✦ Suggest Recipes</button>
+      <button class="btn btn-secondary" onclick="clearScanner()">Clear</button>
+    </div>
+  </div>
+  <div id="grocery-preview" style="display:none"></div>
+  <div id="scan-results"></div>
+</div>
+
+<!-- ══════════ RESOURCES TAB ══════════ -->
+<div id="tab-resources" style="display:none">
+  <p class="section-label">Recipe Sources — tap to visit</p>
+  <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Trusted sources Claude checks first when suggesting recipes.</p>
+  <div class="resource-card" onclick="window.open('https://omnivorescookbook.com','_blank')">
+    <div class="resource-name">Omnivore's Cookbook</div>
+    <div class="resource-url">omnivorescookbook.com</div>
+    <div class="resource-desc">Authentic Chinese home cooking by Maggie Zhu. Nourishing, balanced dishes made accessible for Western kitchens. Already lower oil and sugar than restaurants.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search here first for Chinese recipes — stir-fries, braises, soups, noodles, tofu, chicken, Chinese greens (bok choy, gai lan, a choy, ong choy). Reduce soy sauce 25%.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://maangchi.com','_blank')">
+    <div class="resource-name">Maangchi</div>
+    <div class="resource-url">maangchi.com</div>
+    <div class="resource-desc">Definitive Korean home cooking — kimchi, jjigae, banchan, rice bowls, and Korean desserts like patbingsu and red bean soup.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search maangchi.com for Korean recipes. Reduce gochujang and soy sauce 20-30%. Good for: soups, stews, rice bowls, banchan, Korean desserts.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://cafemaddy.com','_blank')">
+    <div class="resource-name">Cafe Maddy</div>
+    <div class="resource-url">cafemaddy.com</div>
+    <div class="resource-desc">Approachable Asian comfort food — simple, wholesome weeknight recipes. Great for easy Korean and fusion dishes.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Check cafemaddy.com for easy weeknight dishes. Good for: Korean comfort food, simple soups, rice bowls, easy fusion.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://minimalistbaker.com','_blank')">
+    <div class="resource-name">Minimalist Baker</div>
+    <div class="resource-url">minimalistbaker.com</div>
+    <div class="resource-desc">Simple recipes — 10 ingredients or less, 30 minutes. Great for Mediterranean-inspired dishes and healthy Western meals.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search for Mediterranean and American healthy recipes. Good for grain bowls, baked proteins, salads, simple sauces.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://www.loveandlemons.com','_blank')">
+    <div class="resource-name">Love & Lemons</div>
+    <div class="resource-url">loveandlemons.com</div>
+    <div class="resource-desc">Vegetable-forward Mediterranean and American recipes. Seasonal, health-focused.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search for vegetable-forward Mediterranean dishes. Good for roasted vegetables, grain bowls, baked dishes, light pastas.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://thewoksoflife.com','_blank')">
+    <div class="resource-name">Woks of Life</div>
+    <div class="resource-url">thewoksoflife.com</div>
+    <div class="resource-desc">Chinese-American family blog run by the Leung family — incredibly detailed, authentic Chinese recipes spanning Cantonese, Shanghainese, and more. Deep cultural context with every recipe.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search thewoksoflife.com for Chinese recipes, especially anything more regional or technique-heavy. Excellent for dim sum, braised dishes, Cantonese soups, and Chinese-American classics. Reduce soy and oil as standard.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://www.justonecookbook.com','_blank')">
+    <div class="resource-name">Just One Cookbook</div>
+    <div class="resource-url">justonecookbook.com</div>
+    <div class="resource-desc">Japanese home cooking by Nami — approachable, detailed, and beautifully photographed. The best English-language resource for everyday Japanese cooking.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search justonecookbook.com for Japanese recipes. Excellent for udon, soba, onigiri, miso soup, donburi, and Japanese-style chicken and fish. Reduce mirin and soy by 20-25%.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://www.fitfoodiefinds.com','_blank')">
+    <div class="resource-name">Fit Foodie Finds</div>
+    <div class="resource-url">fitfoodiefinds.com</div>
+    <div class="resource-desc">Macro-tracked, high-protein recipes designed for active lifestyles. Every recipe includes full nutrition info. Great for hitting your 120-140g daily protein target.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search fitfoodiefinds.com when user wants high-protein meals with tracked macros. Good for: meal prep bowls, baked chicken, protein-forward salads, post-workout meals. Already health-optimized — minimal modification needed.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://therealfooddietitians.com','_blank')">
+    <div class="resource-name">The Real Food Dietitians</div>
+    <div class="resource-url">therealfooddietitians.com</div>
+    <div class="resource-desc">Nutritionist-developed whole food recipes by registered dietitians. Focus on balanced, practical weeknight meals — no processed ingredients, no gimmicks.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Search therealfooddietitians.com for nutritionist-approved recipes aligned with recomposition and hair health goals. Good for: balanced bowls, anti-inflammatory meals, high-iron dishes, simple sheet pan dinners.</div>
+  </div>
+  <div class="divider"></div>
+  <p class="section-label">Drink Inspiration</p>
+  <div class="resource-card" onclick="window.open('https://mollyteausa.com','_blank')">
+    <div class="resource-name">Molly Tea</div>
+    <div class="resource-url">mollyteausa.com</div>
+    <div class="resource-desc">Premium Eastern floral tea brand from Shenzhen — jasmine, white champaca, gardenia. Known for fragrant milk teas and pistachio coconut jasmine.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Reference for floral tea drinks. Signature: jasmine milk tea, pistachio jasmine coconut, snowy jasmine. Always 0% sugar.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://www.instagram.com/damokoreatown','_blank')">
+    <div class="resource-name">DAMO Tea House</div>
+    <div class="resource-url">Koreatown & Arts District, LA</div>
+    <div class="resource-desc">Korean-inspired women-owned tea house in LA. Known for matcha and hojicha einspänner with cloud cream. Best matcha in LA per many reviews.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Reference for matcha/hojicha drinks. Signature: matcha einspänner, hojicha einspänner, strawberry matcha. Replicate cloud with frothed almond milk.</div>
+  </div>
+  <div class="resource-card" onclick="window.open('https://heytea.com','_blank')">
+    <div class="resource-name">HeyTea</div>
+    <div class="resource-url">heytea.com</div>
+    <div class="resource-desc">Global pioneer of fresh fruit teas. Known for mango boom, grape boom, grapefruit, and cloud series.</div>
+    <div class="resource-instructions"><strong>Claude:</strong> Reference for fresh fruit tea. Good for: mango jasmine, grape green tea, grapefruit tea. Skip cheese foam or use frothed soy milk.</div>
+  </div>
+  <div class="divider"></div>
+  <p class="section-label">Modification Rules</p>
+  <div class="resource-card" style="cursor:default">
+    <div class="resource-name">Healthy Modifications</div>
+    <div class="resource-instructions" style="line-height:2.1">
+      <strong>Sodium:</strong> Reduce soy sauce 25-30%, always low-sodium. Aromatics carry flavor without salt.<br>
+      <strong>Sugar:</strong> Reduce 30-50% in sauces. Use natural sweetness from onion, carrot, ripe fruit.<br>
+      <strong>Oil:</strong> 1 tsp where recipe says 1 tbsp. Air fry or bake instead of deep fry.<br>
+      <strong>Protein boost:</strong> Add tofu, edamame, or egg to vegetable dishes to hit 120-140g daily.<br>
+      <strong>Hair goals:</strong> Prioritize salmon, eggs, spinach, lentils, pumpkin seeds, shiitake.<br>
+      <strong>99 Ranch greens:</strong> A choy, gai lan, ong choy, pea shoots, napa cabbage, baby bok choy.<br>
+      <strong>Baking default:</strong> Bake chicken, salmon, vegetables when possible — less oil, easy cleanup.<br>
+      <strong>Drinks:</strong> Never add sugar — use ripe fruit, cold brew, or coconut water's natural sweetness.
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+
+// recipeCategory: 'meat' | 'vegetable' | 'carb' | 'dessert'
+const recipes = [
+  // ── MEAT & FISH ──
+  {name:"Baked Soy Ginger Chicken Thighs",origin:"Chinese",cat:"meat",tags:["High Protein","Easy"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"10 min",cook:"35 min"},desc:"Chicken thighs marinated in soy, ginger, garlic, and sesame oil then baked until golden and caramelized. Juicy, hands-off, meal-prep perfect.",mod:"✦ Low-sodium soy sauce, reduce by 25%. No extra sugar — the marinade caramelizes on its own.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com"},
+  {name:"Steamed Salmon with Ginger & Scallion",origin:"Chinese",cat:"meat",tags:["Omega-3s","Hair","Quick"],subTags:{chicken:false,fish:true,baked:false,easy:false},time:{prep:"5 min",cook:"12 min"},desc:"Whole salmon fillet steamed over aromatics — the cleanest, lightest way to cook fish. Packed with omega-3s and protein for hair health.",mod:"✦ Use 1 tsp soy sauce instead of 2 tbsp — ginger and scallion carry all the flavor.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/steamed-fish/"},
+  {name:"Miso Glazed Salmon",origin:"Japanese",cat:"meat",tags:["Omega-3s","Hair","Baked"],subTags:{chicken:false,fish:true,baked:true,easy:false},time:{prep:"5 min",cook:"15 min"},desc:"Salmon fillet coated in white miso, mirin, and a touch of honey then broiled until caramelized. Restaurant quality in 20 minutes.",mod:"✦ White miso only (lower sodium). Reduce to 1 tbsp, skip added salt entirely.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Greek Salmon Sheet Pan",origin:"Mediterranean",cat:"meat",tags:["Omega-3s","Baked","Easy"],subTags:{chicken:false,fish:true,baked:true,easy:true},time:{prep:"10 min",cook:"20 min"},desc:"Salmon with cherry tomatoes, olives, zucchini, and lemon on one sheet pan. Minimal dishes, maximum flavor.",mod:"✦ Skip added salt — olives are already salty. Use extra lemon for brightness.",source:"Love & Lemons",url:"https://www.loveandlemons.com"},
+  {name:"Baked Lemon Herb Chicken Breast",origin:"Mediterranean",cat:"meat",tags:["High Protein","Baked","Easy"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"8 min",cook:"25 min"},desc:"Chicken breast in olive oil, lemon, garlic, and herbs, baked until juicy and golden. The simplest high-protein weeknight meal.",mod:"✦ Pound to even thickness before baking — prevents drying out with no extra fat needed.",source:"Love & Lemons",url:"https://www.loveandlemons.com"},
+  {name:"Baked Dakgalbi-Style Drumsticks",origin:"Korean",cat:"meat",tags:["High Protein","Chicken","Easy","Baked"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"10 min",cook:"40 min"},desc:"Drumsticks marinated in gochujang, garlic, soy, and sesame then baked until sticky and caramelized. Meal-prep perfect.",mod:"✦ Reduce gochujang by 30%, skip sugar — still deeply savory with natural caramelization.",source:"Maangchi",url:"https://www.maangchi.com"},
+  {name:"Baked Crispy Chicken Wings",origin:"American",cat:"meat",tags:["High Protein","Baked","Easy"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"10 min",cook:"45 min"},desc:"Crispy oven-baked wings — no frying. The baking powder trick gives restaurant-level crispness with zero oil.",mod:"✦ Pat completely dry, toss with baking powder and salt only. Sauce after baking to keep crispy.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Chinese Black Pepper Beef",origin:"Chinese",cat:"meat",tags:["High Protein","Iron","Quick"],subTags:{chicken:false,fish:false,baked:false,easy:false},time:{prep:"15 min",cook:"10 min"},desc:"Tender beef with crisp bell peppers in a rich peppery brown sauce. Better than takeout, done in 25 minutes.",mod:"✦ Reduce oyster sauce by half and add a splash of water — less sodium, same depth.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/chinese-pepper-steak/"},
+  {name:"High-Protein Egg Scramble",origin:"American",cat:"meat",tags:["High Protein","Easy","Quick","Hair"],subTags:{chicken:false,fish:false,baked:false,easy:true},time:{prep:"3 min",cook:"5 min"},desc:"Egg whites scrambled with spinach, cherry tomatoes, and scallions. The fastest high-protein breakfast — 30g protein in 8 minutes.",mod:"✦ Use 1 whole egg + 3 whites for better texture and the full biotin profile.",source:"General",url:"https://minimalistbaker.com"},
+
+  // ── VEGETABLE ──
+  {name:"Tomato Egg Stir Fry",origin:"Chinese",cat:"vegetable",tags:["Easy","Quick","Hair"],subTags:{baked:false,easy:true,hair:true},time:{prep:"5 min",cook:"8 min"},desc:"The ultimate Chinese weeknight dish — silky scrambled eggs with sweet tomatoes in a light sauce. Done in 13 minutes.",mod:"✦ Skip the sugar — ripe tomatoes are naturally sweet. Reduce salt by half.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/tomato-egg-stir-fry/"},
+  {name:"Garlic Stir-Fried Gai Lan",origin:"Chinese",cat:"vegetable",tags:["Easy","Quick","Iron","Calcium"],subTags:{baked:false,easy:true,hair:true},time:{prep:"3 min",cook:"5 min"},desc:"Blanched gai lan (Chinese broccoli) flash-fried with lots of garlic and oyster sauce. 8 minutes, incredibly good.",mod:"✦ Reduce oyster sauce by half, add a splash of water — still glossy and full of flavor.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/gai-lan/"},
+  {name:"A Choy with Oyster Sauce",origin:"Chinese",cat:"vegetable",tags:["Easy","Quick","Light"],subTags:{baked:false,easy:true,hair:false},time:{prep:"2 min",cook:"5 min"},desc:"Tender a choy lightly blanched and drizzled with garlic-oyster sauce. Barely a recipe — pure simplicity from 99 Ranch.",mod:"✦ Low-sodium oyster sauce; the vegetable's delicate flavor needs very little seasoning.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com"},
+  {name:"Broiled Bok Choy with Oyster Sauce",origin:"Chinese",cat:"vegetable",tags:["Easy","Baked","Quick"],subTags:{baked:true,easy:true,hair:false},time:{prep:"3 min",cook:"8 min"},desc:"Halved baby bok choy broiled until caramelized and lightly charred, drizzled with oyster sauce and sesame oil. Zero effort, maximum reward.",mod:"✦ Mist with oil spray instead of drizzling — cuts oil by 80% with identical results.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Tofu & Bok Choy in Garlic Sauce",origin:"Chinese",cat:"vegetable",tags:["Plant Protein","Easy","Hair"],subTags:{baked:false,easy:true,hair:true},time:{prep:"8 min",cook:"10 min"},desc:"Crispy pan-fried tofu with tender bok choy in a savory garlic-brown sauce. Fast, filling weeknight dinner.",mod:"✦ Air fry tofu instead of pan-frying — same crispness, much less oil.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com"},
+  {name:"Mapo Tofu (Light)",origin:"Chinese",cat:"vegetable",tags:["High Protein","Spicy","Iron"],subTags:{baked:false,easy:false,hair:true},time:{prep:"10 min",cook:"15 min"},desc:"Silken tofu in a numbing, spicy fermented black bean sauce. A Sichuan classic — warming and deeply satisfying.",mod:"✦ Use half the doubanjiang and skip added salt — still bold and complex.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/mapo-tofu/"},
+  {name:"Japchae",origin:"Korean",cat:"vegetable",tags:["Iron","Hair","Spinach"],subTags:{baked:false,easy:false,hair:true},time:{prep:"20 min",cook:"15 min"},desc:"Sweet potato glass noodles stir fried with spinach, shiitake, carrot, and sesame. A Korean classic loaded with iron.",mod:"✦ Reduce sugar from 2 tbsp to 1 tsp — sesame oil and soy sauce are enough complexity.",source:"Maangchi",url:"https://www.maangchi.com/recipe/japchae"},
+  {name:"Doenjang Jjigae",origin:"Korean",cat:"vegetable",tags:["Gut Health","Comfort","Fermented"],subTags:{baked:false,easy:false,hair:false},time:{prep:"10 min",cook:"20 min"},desc:"Hearty Korean fermented soybean stew with tofu, zucchini, and mushrooms. Deeply nourishing and gut-healthy.",mod:"✦ Use 1.5 tbsp doenjang instead of 2. Skip added salt — the paste has plenty.",source:"Cafe Maddy",url:"https://cafemaddy.com"},
+  {name:"Lentil & Spinach Soup",origin:"Mediterranean",cat:"vegetable",tags:["Iron","Hair","Fiber","High Protein"],subTags:{baked:false,easy:false,hair:true},time:{prep:"10 min",cook:"30 min"},desc:"Warming red lentil and spinach soup with cumin, turmeric, and lemon. Iron and protein in every bowl — directly supports hair.",mod:"✦ Skip added salt, use low-sodium broth. Lemon juice at the end brightens everything.",source:"Minimalist Baker",url:"https://minimalistbaker.com"},
+  {name:"Roasted Sweet Potato & Chickpea Bowl",origin:"Mediterranean",cat:"vegetable",tags:["Fiber","Iron","Baked","Easy"],subTags:{baked:true,easy:true,hair:true},time:{prep:"10 min",cook:"30 min"},desc:"Sheet pan sweet potato and chickpeas with tahini dressing. Filling, naturally high in iron and zinc, great for hair goals.",mod:"✦ Sub Greek yogurt thinned with lemon for tahini — same creaminess, 10g extra protein.",source:"Minimalist Baker",url:"https://minimalistbaker.com"},
+  {name:"Healthy Vegetable Rice Bowl",origin:"Korean",cat:"vegetable",tags:["Vegan","Fiber","Meal Prep"],subTags:{baked:false,easy:false,hair:false},time:{prep:"10 min",cook:"25 min"},desc:"One-pot brown rice steamed with kale, carrots, and mushrooms. Clean, vegan, and deeply satisfying with sesame-soy dressing.",mod:"✦ Add a soft-boiled egg on top for an easy protein boost to hit your daily targets.",source:"Maangchi",url:"https://www.maangchi.com/recipe/yachaebap"},
+
+  // ── CARB-BASED ──
+  {name:"Spicy Miso Udon",origin:"Japanese",cat:"carb",tags:["Udon","Comfort","Quick"],subTags:{udon:true,noodles:false,rice:false,easy:false},time:{prep:"8 min",cook:"10 min"},desc:"Thick frozen udon in a rich spicy miso broth with mushrooms, soft-boiled egg, and scallions. 18 minutes from fridge to bowl.",mod:"✦ White miso (lower sodium), reduce by 20%. The egg adds 6g protein — don't skip it.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Chicken Udon Soup",origin:"Japanese",cat:"carb",tags:["Udon","High Protein","Comfort"],subTags:{udon:true,noodles:false,rice:false,easy:false},time:{prep:"10 min",cook:"20 min"},desc:"Light dashi broth with sliced chicken breast, frozen udon, bok choy, and sesame oil. Clean, restorative, protein-packed.",mod:"✦ Low-sodium broth, skip extra soy sauce — let the dashi flavor lead.",source:"General",url:"https://www.maangchi.com"},
+  {name:"Stir-Fried Udon with Vegetables",origin:"Japanese",cat:"carb",tags:["Udon","Easy","Quick","Vegetarian"],subTags:{udon:true,noodles:false,rice:false,easy:true},time:{prep:"5 min",cook:"10 min"},desc:"Frozen udon stir-fried with bok choy, mushrooms, and scallion in a savory sauce. The ultimate lazy weeknight dish.",mod:"✦ Max 1 tbsp soy sauce. Add sesame oil at the end for flavor with minimal sodium.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Vegetable Lo Mein",origin:"Chinese",cat:"carb",tags:["Noodles","Fiber","Iron","Quick"],subTags:{udon:false,noodles:true,rice:false,easy:false},time:{prep:"10 min",cook:"12 min"},desc:"Noodles with bok choy, snow peas, and carrots in a rich brown sauce. More vegetables and less oil than any restaurant.",mod:"✦ Reduce dark soy sauce 30%, add rice vinegar for brightness — same depth, lighter feel.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/vegetable-lo-mein/"},
+  {name:"Egg Fried Rice",origin:"Chinese",cat:"carb",tags:["Rice","Easy","High Protein","Quick"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"5 min",cook:"10 min"},desc:"Classic Chinese egg fried rice with day-old brown rice, scallions, soy sauce, and sesame oil. Better with leftover rice.",mod:"✦ Use brown rice for more fiber. Reduce soy sauce to 1 tbsp. Skip salt — soy is enough.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/egg-fried-rice/"},
+  {name:"Salmon Onigiri Rice Balls",origin:"Japanese",cat:"carb",tags:["Rice","High Protein","Omega-3s","Meal Prep"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"15 min",cook:"0 min"},desc:"Steamed rice packed around flaked salmon and a touch of sesame. Portable, satisfying, and high in protein and omega-3s.",mod:"✦ Use brown rice, reduce soy in salmon filling by half. Great meal-prep grab-and-go.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Cold Soba Noodles",origin:"Japanese",cat:"carb",tags:["Noodles","Light","Quick","Easy"],subTags:{udon:false,noodles:true,rice:false,easy:true},time:{prep:"10 min",cook:"5 min"},desc:"Chilled buckwheat soba with dipping sauce, cucumber, and sesame seeds. Light, refreshing, and done in 15 minutes.",mod:"✦ Reduce dipping sauce soy by 30% and dilute with extra dashi or water.",source:"General",url:"https://omnivorescookbook.com"},
+  {name:"Korean Kimchi Fried Rice",origin:"Korean",cat:"carb",tags:["Rice","Easy","Gut Health","Quick"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"5 min",cook:"10 min"},desc:"Day-old rice stir fried with kimchi, gochujang, sesame oil, and a fried egg on top. Bold, satisfying, uses up leftovers.",mod:"✦ Use brown rice. Skip added salt and reduce gochujang by 30% — kimchi is already salty.",source:"Maangchi",url:"https://www.maangchi.com/recipe/kimchi-bokkeumbap"},
+
+  // ── DESSERTS ──
+  {name:"Mango Sago",origin:"Cantonese",cat:"dessert",tags:["Fruit","Vitamin C","Light"],subTags:{fruit:true},time:{prep:"15 min",cook:"10 min"},desc:"Chilled coconut milk pudding with fresh mango and tapioca pearls. Light, naturally sweet, a genuinely healthy dessert.",mod:"✦ Light coconut milk only. Let ripe mango lead — zero added sugar needed.",source:"Traditional",url:"https://omnivorescookbook.com"},
+  {name:"Red Bean Soup (Hong Dou Tang)",origin:"Chinese",cat:"dessert",tags:["Iron","Fiber","Traditional"],subTags:{fruit:false},time:{prep:"5 min",cook:"60 min"},desc:"Warm or chilled sweet red bean tong sui — packed with fiber, iron, and plant protein. A classic healthy Chinese dessert.",mod:"✦ Use 2 tbsp rock sugar instead of ¼ cup — still comfortingly sweet, much better for blood sugar.",source:"Traditional",url:"https://omnivorescookbook.com"},
+  {name:"Patbingsu",origin:"Korean",cat:"dessert",tags:["Fruit","Light","Summer"],subTags:{fruit:true},time:{prep:"10 min",cook:"0 min"},desc:"Korean shaved ice with lightly sweetened red beans and fresh fruit. Refreshing and lower calorie than most desserts.",mod:"✦ Make your own red beans with minimal sugar — half the calories of canned.",source:"Maangchi",url:"https://www.maangchi.com/recipe/patbingsu"},
+  {name:"Fruit Jelly Cups",origin:"Chinese",cat:"dessert",tags:["Fruit","Easy","Light"],subTags:{fruit:true},time:{prep:"10 min",cook:"5 min"},desc:"Coconut water or lychee juice set with agar-agar and fresh fruit chunks. Clean, light, and naturally sweet.",mod:"✦ Use coconut water as the base — zero added sugar and natural electrolytes.",source:"Traditional",url:"https://omnivorescookbook.com"},
+
+  // ── WOKS OF LIFE ──
+  {name:"Cantonese Steamed Fish",origin:"Chinese",cat:"meat",tags:["Omega-3s","Hair","High Protein"],subTags:{chicken:false,fish:true,baked:false,easy:false},time:{prep:"10 min",cook:"10 min"},desc:"Whole fish or fillet steamed over ginger and scallion, finished with hot oil and soy. The definitive Cantonese technique — silky, clean, restaurant-quality.",mod:"✦ Use 1 tsp low-sodium soy sauce instead of 2 tbsp. The hot oil pour does all the work.",source:"Woks of Life",url:"https://thewoksoflife.com/cantonese-steamed-fish/"},
+  {name:"Hong Shao Rou (Red Braised Pork Belly)",origin:"Chinese",cat:"meat",tags:["Iron","Comfort","Braised"],subTags:{chicken:false,fish:false,baked:false,easy:false},time:{prep:"15 min",cook:"90 min"},desc:"Melt-in-your-mouth pork belly braised in soy, Shaoxing wine, and rock sugar until deeply caramelized. A Shanghai classic — rich, glossy, unforgettable.",mod:"✦ Reduce soy by 25% and rock sugar by half. Skim fat after braising for a leaner result.",source:"Woks of Life",url:"https://thewoksoflife.com/hong-shao-rou-red-braised-pork-belly/"},
+  {name:"Wonton Soup",origin:"Chinese",cat:"carb",tags:["High Protein","Comfort","Noodles"],subTags:{udon:false,noodles:true,rice:false,easy:false},time:{prep:"30 min",cook:"15 min"},desc:"Handmade pork and shrimp wontons in a clear ginger-scallion broth. Satisfying, high-protein, and deeply comforting.",mod:"✦ Use lean ground pork or ground chicken. Reduce soy in filling by 30%. Low-sodium broth only.",source:"Woks of Life",url:"https://thewoksoflife.com/wonton-soup/"},
+  {name:"Ong Choy with Fermented Tofu",origin:"Chinese",cat:"vegetable",tags:["Easy","Iron","Quick"],subTags:{baked:false,easy:true,hair:true},time:{prep:"3 min",cook:"5 min"},desc:"Water spinach (ong choy) flash-fried with fermented tofu and garlic. A classic Cantonese side — intensely savory, 99 Ranch staple.",mod:"✦ Use ½ cube fermented tofu instead of 1 — it's very salty. No added salt needed.",source:"Woks of Life",url:"https://thewoksoflife.com/stir-fried-water-spinach-ong-choy/"},
+  {name:"Scallion Ginger Chicken",origin:"Chinese",cat:"meat",tags:["High Protein","Chicken","Easy"],subTags:{chicken:true,fish:false,baked:false,easy:true},time:{prep:"10 min",cook:"20 min"},desc:"Poached chicken drenched in a fragrant scallion-ginger oil sauce. Silky, clean, incredibly simple — one of the best chicken preparations in Chinese cooking.",mod:"✦ Reduce the oil pour to 1 tbsp and use low-sodium soy. The aromatics carry everything.",source:"Woks of Life",url:"https://thewoksoflife.com/chinese-scallion-ginger-chicken/"},
+
+  // ── JUST ONE COOKBOOK ──
+  {name:"Oyakodon (Chicken & Egg Rice Bowl)",origin:"Japanese",cat:"carb",tags:["Rice","High Protein","Chicken","Easy"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"10 min",cook:"15 min"},desc:"Tender chicken and soft eggs simmered in a dashi-soy broth served over steamed rice. One of Japan's most beloved comfort bowls — ready in 25 minutes.",mod:"✦ Use low-sodium soy and reduce mirin by half. Brown rice adds fiber without changing the dish.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/oyakodon/"},
+  {name:"Japanese Miso Soup",origin:"Japanese",cat:"vegetable",tags:["Easy","Gut Health","Quick"],subTags:{baked:false,easy:true,hair:false},time:{prep:"5 min",cook:"5 min"},desc:"Classic dashi-based miso soup with tofu, wakame, and scallion. The ultimate daily Japanese ritual — done in 10 minutes, gut-nourishing.",mod:"✦ Use white or yellow miso (lower sodium). 1 tbsp per serving is plenty. Never boil after adding miso.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/how-to-make-miso-soup/"},
+  {name:"Chicken Katsu",origin:"Japanese",cat:"meat",tags:["High Protein","Chicken","Crispy"],subTags:{chicken:true,fish:false,baked:true,easy:false},time:{prep:"15 min",cook:"20 min"},desc:"Panko-crusted chicken breast baked until golden and crispy. Served with shredded cabbage and tonkatsu sauce — Japan's most satisfying comfort food.",mod:"✦ Bake at 425°F instead of frying — spray with oil and flip halfway. Same crunch, far less oil.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/chicken-katsu/"},
+  {name:"Teriyaki Salmon",origin:"Japanese",cat:"meat",tags:["Omega-3s","Hair","High Protein","Easy"],subTags:{chicken:false,fish:true,baked:true,easy:true},time:{prep:"5 min",cook:"15 min"},desc:"Salmon glazed in a simple soy-mirin teriyaki sauce, baked until caramelized. Sweet, savory, done in 20 minutes.",mod:"✦ Reduce mirin to 1 tsp and soy to 1 tbsp — the glaze concentrates as it bakes, so less is plenty.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/teriyaki-salmon/"},
+  {name:"Zaru Soba (Cold Soba with Dipping Sauce)",origin:"Japanese",cat:"carb",tags:["Noodles","Light","Easy","Quick"],subTags:{udon:false,noodles:true,rice:false,easy:true},time:{prep:"5 min",cook:"8 min"},desc:"Chilled buckwheat soba served with a cold tsuyu dipping sauce, grated ginger, and nori. Refreshing, light, and done in 13 minutes.",mod:"✦ Dilute tsuyu with extra dashi or water — 1:3 ratio keeps sodium reasonable.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/zaru-soba/"},
+
+  // ── FIT FOODIE FINDS ──
+  {name:"High Protein Chicken Rice Bowl",origin:"American",cat:"carb",tags:["Rice","High Protein","Chicken","Meal Prep"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"10 min",cook:"25 min"},desc:"Seasoned ground or sliced chicken over brown rice with roasted vegetables and a simple tahini drizzle. Macro-balanced, meal-prep friendly — ~45g protein per bowl.",mod:"✦ Skip added salt in seasoning — garlic powder, cumin, and paprika carry all the flavor.",source:"Fit Foodie Finds",url:"https://fitfoodiefinds.com/high-protein-chicken-rice-bowl/"},
+  {name:"Sheet Pan Chicken & Vegetables",origin:"American",cat:"meat",tags:["High Protein","Baked","Chicken","Easy","Meal Prep"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"10 min",cook:"30 min"},desc:"Chicken thighs and a rainbow of vegetables roasted on one pan. Minimal prep, minimal cleanup, maximal protein — a weekly staple.",mod:"✦ Use olive oil spray instead of drizzling — cuts 100 calories while keeping everything roasted perfectly.",source:"Fit Foodie Finds",url:"https://fitfoodiefinds.com/sheet-pan-chicken-and-vegetables/"},
+  {name:"High Protein Overnight Oats",origin:"American",cat:"carb",tags:["Rice","High Protein","Hair","Easy"],subTags:{udon:false,noodles:false,rice:false,easy:true},time:{prep:"5 min",cook:"0 min"},desc:"Oats soaked overnight with Greek yogurt, protein-rich milk, and berries — 25g protein per jar. Make 5 at once for the whole week.",mod:"✦ Use soy milk for highest protein. Add pumpkin seeds on top for zinc and hair health.",source:"Fit Foodie Finds",url:"https://fitfoodiefinds.com/high-protein-overnight-oats/"},
+  {name:"Salmon Power Bowl",origin:"American",cat:"meat",tags:["Omega-3s","Hair","High Protein","Baked"],subTags:{chicken:false,fish:true,baked:true,easy:true},time:{prep:"10 min",cook:"20 min"},desc:"Baked salmon over brown rice with avocado, edamame, cucumber, and a sesame-ginger dressing. ~40g protein, loaded with hair-supporting nutrients.",mod:"✦ Skip the dressing salt — the sesame oil and rice vinegar provide all the flavor needed.",source:"Fit Foodie Finds",url:"https://fitfoodiefinds.com/salmon-power-bowl/"},
+
+  // ── REAL FOOD DIETITIANS ──
+  {name:"Anti-Inflammatory Turmeric Chicken Soup",origin:"American",cat:"meat",tags:["High Protein","Chicken","Anti-Inflammatory","Hair"],subTags:{chicken:true,fish:false,baked:false,easy:false},time:{prep:"15 min",cook:"30 min"},desc:"Chicken simmered with turmeric, ginger, garlic, and leafy greens. Anti-inflammatory powerhouse — directly supports hair health and reduces cortisol.",mod:"✦ Use low-sodium broth. Add extra ginger and turmeric freely — they have zero sodium.",source:"The Real Food Dietitians",url:"https://therealfooddietitians.com/turmeric-chicken-soup/"},
+  {name:"Iron-Rich Lentil & Kale Bowl",origin:"Mediterranean",cat:"vegetable",tags:["Iron","Hair","High Protein","Easy"],subTags:{baked:false,easy:true,hair:true},time:{prep:"10 min",cook:"25 min"},desc:"Spiced lentils over wilted kale with lemon and a soft-boiled egg. One of the most iron-dense meals you can make — directly targets hair loss from deficiency.",mod:"✦ Add a squeeze of lemon over the lentils — vitamin C dramatically boosts iron absorption.",source:"The Real Food Dietitians",url:"https://therealfooddietitians.com"},
+  {name:"Baked Lemon Garlic Salmon & Asparagus",origin:"Mediterranean",cat:"meat",tags:["Omega-3s","Hair","Baked","Easy"],subTags:{chicken:false,fish:true,baked:true,easy:true},time:{prep:"8 min",cook:"18 min"},desc:"Salmon fillet and asparagus baked together with lemon, garlic, and olive oil. One pan, 26 minutes, 35g protein, zero cleanup.",mod:"✦ Skip added salt — lemon and garlic provide all the seasoning needed.",source:"The Real Food Dietitians",url:"https://therealfooddietitians.com/lemon-garlic-baked-salmon/"},
+  {name:"Ground Beef & Spinach Stir Fry",origin:"Chinese",cat:"meat",tags:["Iron","Hair","High Protein","Easy"],subTags:{chicken:false,fish:false,baked:false,easy:true},time:{prep:"10 min",cook:"12 min"},desc:"Ground beef cooked with garlic, ginger, and soy, finished with fresh wilted spinach. Iron-rich comfort food — deeply nourishing for hair health.",mod:"✦ Use 1 tsp low-sodium soy sauce instead of 1 tbsp. Add a squeeze of lemon over the finished dish — vitamin C boosts iron absorption.",source:"Woks of Life",url:"https://thewoksoflife.com"},
+
+  {name:"Nourishing Bone Broth Rice Porridge",origin:"Chinese",cat:"carb",tags:["Rice","Easy","Hair","Gut Health"],subTags:{udon:false,noodles:false,rice:true,easy:true},time:{prep:"5 min",cook:"30 min"},desc:"Congee-style rice porridge slow-cooked in bone broth with ginger and scallion. Deeply healing, easy on digestion, rich in collagen for hair and skin.",mod:"✦ Use low-sodium bone broth. Top with a soft egg and sesame oil — protein boost with no extra sodium.",source:"The Real Food Dietitians",url:"https://therealfooddietitians.com"},
+];
+
+const drinks = [
+  {name:"Cold Brew Jasmine Milk Tea",cat:"Floral Tea",badge:"db-floral",milks:["oat milk","almond milk","soy milk","whole milk"],desc:"Cold-steeped jasmine tea blended with your milk of choice. Molly Tea's signature at home — silky, floral, zero bitterness.",steps:["Steep 2 tsp loose jasmine green tea in 300ml cold water for 8-12 hrs in fridge.","Strain tea over ice in a tall glass.","Add 80-100ml milk of choice (almond for lightest, soy for most protein, whole for creamiest).","Stir gently. No sugar needed — jasmine is naturally fragrant and sweet-smelling."],tags:["No Sugar","Cold Brew","Antioxidants"],inspiration:"Inspired by Molly Tea Premium Jasmine Milk Tea"},
+  {name:"Jasmine Coconut Water",cat:"Floral Tea",badge:"db-floral",milks:[],desc:"Cold-brewed jasmine tea topped with coconut water — hydrating, floral, refreshing. Natural electrolytes meet antioxidants.",steps:["Cold-brew jasmine tea (2 tsp in 200ml cold water, 8-12 hrs). Strain.","Mix 50/50 with canned coconut water over ice.","Optional: squeeze of lime and a few fresh mint leaves.","Coconut water adds natural sweetness — no sweetener needed."],tags:["No Sugar","Electrolytes","Hydrating"],inspiration:"Original fusion idea"},
+  {name:"Grape Jasmine Fruit Tea",cat:"Fruit Tea",badge:"db-fruit",milks:[],desc:"Blended fresh grapes strained into cold jasmine tea — the drink you already make, elevated with a squeeze of lemon.",steps:["Blend 1 cup seedless grapes until smooth, strain through fine mesh to get juice.","Cold-brew jasmine tea 8-12 hrs, or brew strong and cool.","Combine 2 parts grape juice to 3 parts tea over ice.","Squeeze of lemon and a few grapes as garnish."],tags:["No Sugar","Vitamin C","Your Recipe ✦"],inspiration:"Your own recipe — elevated"},
+  {name:"Mango Jasmine Fruit Tea",cat:"Fruit Tea",badge:"db-fruit",milks:[],desc:"Fresh or frozen mango blended into jasmine green tea — light, tropical, naturally sweet. HeyTea Mango Boom vibes.",steps:["Blend ½ cup fresh or frozen mango until smooth.","Cold-brew jasmine tea or brew strong and cool.","Mix 2-3 tbsp mango puree into 250ml tea over ice.","Ripe mango needs no sweetener. Add lime for brightness."],tags:["No Sugar","Vitamin C","Tropical"],inspiration:"Inspired by HeyTea Mango Boom"},
+  {name:"Matcha Coconut Water Latte",cat:"Blend",badge:"db-blend",milks:["coconut water","almond milk"],desc:"Ceremonial matcha whisked into coconut water with a splash of almond milk — earthy meets tropical. Electrolytes + antioxidants.",steps:["Sift 1 tsp ceremonial matcha into a cup.","Add 2 tbsp warm water (70°C) and whisk until frothy.","Pour over ice, add 150ml canned coconut water.","Top with 50ml almond milk. Stir gently."],tags:["No Sugar","Electrolytes","Fusion"],inspiration:"Original fusion · DAMO-inspired"},
+  {name:"Iced Matcha Almond Latte",cat:"Matcha",badge:"db-matcha",milks:["almond milk","oat milk","soy milk"],desc:"Clean, simple iced matcha latte — the daily base. Almond milk for lightest, soy for most protein.",steps:["Sift 1 tsp ceremonial matcha into a small bowl.","Whisk with 2 tbsp warm water until frothy and lump-free.","Fill glass with ice, pour in 200ml unsweetened milk of choice.","Pour matcha slowly over milk — beautiful layers."],tags:["No Sugar","Low Cal","Antioxidants"],inspiration:"Inspired by DAMO Matcha Einspänner"},
+  {name:"Strawberry Matcha",cat:"Matcha",badge:"db-matcha",milks:["almond milk","oat milk","whole milk"],desc:"Ripe strawberries muddled under cold matcha latte — DAMO's most famous drink, no syrup needed.",steps:["Muddle 3-4 ripe strawberries in the bottom of a glass until juicy.","Add ice over the strawberries.","Whisk 1 tsp matcha with 2 tbsp warm water until smooth.","Pour 180ml milk over ice, then slowly pour matcha on top."],tags:["No Sugar","Vitamin C","DAMO Dupe"],inspiration:"Inspired by DAMO Strawberry Matcha"},
+  {name:"Iced Hojicha Latte",cat:"Hojicha",badge:"db-hojicha",milks:["oat milk","almond milk","soy milk","whole milk"],desc:"Roasted Japanese green tea whisked into cold milk — toasty, smooth, lower caffeine than matcha. Calming and cozy.",steps:["Add 1.5 tsp hojicha powder to a cup with 2 tbsp warm water.","Whisk until smooth — dissolves easier than matcha.","Fill glass with ice, pour in 220ml milk of choice.","Natural caramel note — no sweetener needed."],tags:["No Sugar","Low Caffeine","Calming"],inspiration:"Inspired by DAMO Hojicha Einspänner"},
+  {name:"Hojicha Coconut Water",cat:"Blend",badge:"db-blend",milks:["coconut water"],desc:"Hojicha dissolved in coconut water — roasty, tropical, naturally sweet. Completely unique.",steps:["Whisk 1 tsp hojicha powder with 2 tbsp warm water until fully dissolved.","Pour over ice in a tall glass.","Top with 250ml canned coconut water.","Coconut's natural sweetness perfectly balances the roasty hojicha."],tags:["No Sugar","Electrolytes","Unique"],inspiration:"Original — uses your coconut water stash"},
+  {name:"Matcha Soy Milk Latte",cat:"Matcha",badge:"db-matcha",milks:["organic soy milk"],desc:"Ceremonial matcha stirred into cold organic soy milk — creamy, protein-rich. 8g protein per glass.",steps:["Sift 1 tsp ceremonial matcha into a bowl.","Whisk with 2 tbsp warm water until smooth and frothy.","Pour 220ml cold organic soy milk over ice.","Add matcha and stir. Soy milk's natural sweetness pairs perfectly."],tags:["No Sugar","High Protein","Antioxidants"],inspiration:"Soy milk is the ideal matcha base for protein"},
+  {name:"Cold Brew Earl Grey (Fixed)",cat:"Cold Brew",badge:"db-coldbrew",milks:["almond milk","oat milk"],desc:"5-hr cold brew keeps bergamot gentle. Orange zest makes it bloom — totally different drink than what you tried.",steps:["Cold-brew earl grey for only 4-5 hours (not overnight — it gets harsh).","Strain and add 2-3 strips of fresh orange peel.","Let sit 30 more minutes — orange amplifies the bergamot.","Serve over ice with a splash of almond milk."],tags:["Cold Brew","Citrus","Floral"],inspiration:"Fixes the bitter earl grey problem — orange zest is the key"},
+  {name:"Hot Jasmine Milk Tea",cat:"Milk Tea",badge:"db-milk",milks:["whole milk","oat milk","soy milk"],desc:"Hot strong jasmine tea with warmed milk — the original Molly Tea formula at home in 5 minutes.",steps:["Brew jasmine tea strong — 2 tsp per cup, steep exactly 3 minutes.","Warm 100ml milk until steaming, not boiling.","Pour tea into mug, add warm milk. 2:1 tea to milk ratio.","Sip slowly — jasmine fragrance should lead every sip."],tags:["No Sugar","Hot","Floral","Warming"],inspiration:"Inspired by Molly Tea signature jasmine milk tea"},
+  {name:"Pistachio Jasmine Coconut",cat:"Blend",badge:"db-blend",milks:["coconut water"],desc:"Cold jasmine tea + coconut water + pistachio butter — Molly Tea's most viral drink, made healthier at home.",steps:["Cold-brew jasmine tea overnight. Strain.","Stir 1 tsp natural pistachio butter with 2 tbsp warm water until smooth.","Pour 150ml jasmine tea + 100ml coconut water over ice.","Spoon pistachio mixture on top, stir gently as you drink."],tags:["No Sugar","Healthy Fats","Molly Tea Dupe"],inspiration:"Molly Tea Pistachio Jasmine Coconut dupe"},
+  {name:"Lychee Rose Green Tea",cat:"Fruit Tea",badge:"db-fruit",milks:[],desc:"Delicate green tea infused with lychee and rose, served with lychee pulp. Floral, light, naturally sweet — inspired by Mr. Sun's signature.",steps:["Brew green tea strong (3 tsp in 200ml water), steep 3 minutes. Cool completely or cold-brew overnight.","Strain and pour over ice.","Add 2 tbsp fresh or frozen lychee pulp (no added sugar).","Optional: a few rose petals or a drop of rose water for elegance. Stir gently."],tags:["No Sugar","Floral","Fruit Tea","Mr. Sun"],inspiration:"Inspired by Mr. Sun Tea — Lychee Rose Green Tea"},
+  {name:"Mango Green Tea with Crystal Ball",cat:"Fruit Tea",badge:"db-fruit",milks:[],desc:"Refreshing mango green tea topped with popping boba (crystal ball). Tropical, bright, and fun — Mr. Sun's most ordered drink.",steps:["Brew green tea and cool completely.","Blend ½ cup fresh or frozen mango until smooth.","Pour 200ml green tea over ice.","Top with 3 tbsp mango puree.","Add a small handful of popping boba on top. Stir before sipping."],tags:["No Sugar","Tropical","Fruit Tea","Mr. Sun"],inspiration:"Inspired by Mr. Sun Tea — Mango Green Tea with Crystal Ball"},
+  {name:"Cheese Milk Foam Oolong",cat:"Milk Tea",badge:"db-milk",milks:["whole milk"],desc:"Creamy oolong tea topped with a light cheese foam (made with cream cheese). Mr. Sun's signature innovation — rich, savory, addictive.",steps:["Brew strong oolong tea (3 tsp per 250ml), steep 4 minutes. Cool completely.","Whisk 1 oz room-temp cream cheese with 2 tbsp whole milk until smooth (or blend 15 seconds).","Pour oolong tea over ice.","Top with a thick layer of cheese foam.","Serve immediately — the foam melts into the tea as you drink."],tags:["No Sugar","Mr. Sun Signature","Savory","Unique"],inspiration:"Inspired by Mr. Sun Tea — Cheese Milk Foam Oolong"},
+  {name:"Pistachio Jasmine Coconut",cat:"Blend",badge:"db-blend",milks:["coconut water"],desc:"Cold jasmine tea + coconut water + pistachio butter — Molly Tea's most viral drink, made healthier at home.",steps:["Cold-brew jasmine tea overnight. Strain.","Stir 1 tsp natural pistachio butter with 2 tbsp warm water until smooth.","Pour 150ml jasmine tea + 100ml coconut water over ice.","Spoon pistachio mixture on top, stir gently as you drink."],tags:["No Sugar","Healthy Fats","Molly Tea Dupe"],inspiration:"Molly Tea Pistachio Jasmine Coconut dupe"},
+];
+
+const foods = [
+  {name:"Salmon",emoji:"🐟",cat:"Protein",goals:["hair","recomposition"],origin:"Japanese/General",why:"Rich in omega-3s — directly feeds hair follicles and reduces inflammation.",macros:{cal:208,pro:28,carb:0,fat:10}},
+  {name:"Chicken Breast",emoji:"🍗",cat:"Protein",goals:["recomposition","muscle"],origin:"General",why:"Gold standard lean protein — ideal calorie-to-protein ratio for recomposition.",macros:{cal:165,pro:35,carb:0,fat:3}},
+  {name:"Chicken Thighs",emoji:"🍖",cat:"Protein",goals:["recomposition","hair"],origin:"General",why:"More flavorful than breast, still excellent protein with iron for hair health.",macros:{cal:209,pro:26,carb:0,fat:11}},
+  {name:"Eggs",emoji:"🥚",cat:"Protein",goals:["hair","recomposition"],origin:"General",why:"Complete protein with biotin and vitamin D — both critical for hair growth.",macros:{cal:155,pro:13,carb:1,fat:11}},
+  {name:"Firm Tofu",emoji:"🫙",cat:"Protein",goals:["hair","recomposition"],origin:"Chinese/Korean",why:"High plant protein with all essential amino acids. 99 Ranch, TJ's, Safeway all carry it.",macros:{cal:76,pro:8,carb:2,fat:4}},
+  {name:"Greek Yogurt",emoji:"🥛",cat:"Protein",goals:["recomposition","muscle"],origin:"General",why:"High protein with probiotics that improve nutrient absorption.",macros:{cal:100,pro:17,carb:6,fat:0}},
+  {name:"Lentils",emoji:"🫘",cat:"Protein",goals:["hair","recomposition"],origin:"Mediterranean",why:"Best plant source of iron — critical for hair. High fiber supports gut health.",macros:{cal:230,pro:18,carb:40,fat:1}},
+  {name:"Baby Bok Choy",emoji:"🥬",cat:"Vegetable",goals:["hair","anti-inflammatory"],origin:"Chinese — 99 Ranch",why:"High calcium, vitamin C, and folate. Available at 99 Ranch all year.",macros:{cal:13,pro:2,carb:2,fat:0}},
+  {name:"Gai Lan (Chinese Broccoli)",emoji:"🥦",cat:"Vegetable",goals:["hair","anti-inflammatory"],origin:"Chinese — 99 Ranch",why:"Iron, calcium, vitamin C — boosts iron absorption. A 99 Ranch staple.",macros:{cal:19,pro:2,carb:3,fat:0}},
+  {name:"A Choy (Chinese Lettuce)",emoji:"🌿",cat:"Vegetable",goals:["anti-inflammatory"],origin:"Chinese — 99 Ranch",why:"Light, hydrating, great for quick stir fry or soup.",macros:{cal:15,pro:1,carb:3,fat:0}},
+  {name:"Ong Choy (Water Spinach)",emoji:"🌿",cat:"Vegetable",goals:["hair","anti-inflammatory"],origin:"Chinese — 99 Ranch",why:"Iron-rich leafy green — great for hair. Classic stir fry with fermented tofu.",macros:{cal:19,pro:2,carb:4,fat:0}},
+  {name:"Pea Shoots",emoji:"🌱",cat:"Vegetable",goals:["hair"],origin:"Chinese — 99 Ranch",why:"Sweet, tender, packed with vitamins C and K. Quick stir fry or in soups.",macros:{cal:35,pro:4,carb:5,fat:0}},
+  {name:"Shiitake Mushrooms",emoji:"🍄",cat:"Vegetable",goals:["hair","recomposition"],origin:"Chinese/Japanese",why:"Zinc and selenium — both directly support hair follicle health.",macros:{cal:34,pro:2,carb:7,fat:0}},
+  {name:"Sweet Potato",emoji:"🍠",cat:"Vegetable",goals:["hair","energy"],origin:"General",why:"Beta-carotene converts to vitamin A — supports scalp health. Great post-workout carb.",macros:{cal:103,pro:2,carb:24,fat:0}},
+  {name:"Spinach",emoji:"🥬",cat:"Vegetable",goals:["hair"],origin:"General",why:"Iron and folate — two nutrients directly linked to hair growth.",macros:{cal:23,pro:3,carb:4,fat:0}},
+  {name:"Brown Rice",emoji:"🍚",cat:"Grain",goals:["energy","recomposition"],origin:"Asian",why:"Slow-digesting carb that fuels workouts and keeps energy stable.",macros:{cal:216,pro:5,carb:45,fat:2}},
+  {name:"Frozen Udon",emoji:"🍜",cat:"Grain",goals:["energy","muscle"],origin:"Japanese — TJ's & 99 Ranch",why:"Thick chewy noodles — great post-workout carb. Both TJ's and 99 Ranch carry them.",macros:{cal:210,pro:7,carb:44,fat:1}},
+  {name:"Oats",emoji:"🥣",cat:"Grain",goals:["hair","energy"],origin:"General",why:"Iron and zinc for hair growth. Beta-glucan fiber supports gut and energy.",macros:{cal:307,pro:11,carb:55,fat:5}},
+  {name:"Avocado",emoji:"🥑",cat:"Healthy Fat",goals:["hair","anti-inflammatory"],origin:"General — Trader Joe's",why:"Biotin and vitamin E nourish hair follicles. Great TJ's prices.",macros:{cal:234,pro:3,carb:12,fat:21}},
+  {name:"Pumpkin Seeds",emoji:"🎃",cat:"Healthy Fat",goals:["hair","sleep"],origin:"General",why:"One of the best sources of zinc — directly linked to stopping hair shedding.",macros:{cal:151,pro:7,carb:5,fat:13}},
+  {name:"Mango",emoji:"🥭",cat:"Fruit",goals:["hair","energy"],origin:"Asian",why:"Rich in vitamin C and A — great for hair, skin, immunity. Base for healthy desserts.",macros:{cal:99,pro:1,carb:25,fat:1}},
+  {name:"Blueberries",emoji:"🫐",cat:"Fruit",goals:["hair","anti-inflammatory"],origin:"General",why:"Highest antioxidant content of any fruit — fights oxidative stress that damages follicles.",macros:{cal:84,pro:1,carb:21,fat:0}},
+];
+
+// ══════════════════════════════════════════
+// RECIPE IMAGES (Unsplash free-to-use)
+// ══════════════════════════════════════════
+const recipeImages = {
+  "Baked Soy Ginger Chicken Thighs":"https://images.unsplash.com/photo-1598103442097-8b74394b95c2?w=600&q=80",
+  "Steamed Salmon with Ginger & Scallion":"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80",
+  "Miso Glazed Salmon":"https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80",
+  "Greek Salmon Sheet Pan":"https://images.unsplash.com/photo-1534482421-64566f976cfa?w=600&q=80",
+  "Baked Lemon Herb Chicken Breast":"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80",
+  "Baked Dakgalbi-Style Drumsticks":"https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80",
+  "Baked Crispy Chicken Wings":"https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=600&q=80",
+  "Chinese Black Pepper Beef":"https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
+  "High-Protein Egg Scramble":"https://images.unsplash.com/photo-1510693206972-df098062cb71?w=600&q=80",
+  "Tomato Egg Stir Fry":"https://images.unsplash.com/photo-1614516958781-8d98cde2bd09?w=600&q=80",
+  "Garlic Stir-Fried Gai Lan":"https://images.unsplash.com/photo-1576021182211-9ea8dced3690?w=600&q=80",
+  "A Choy with Oyster Sauce":"https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80",
+  "Broiled Bok Choy with Oyster Sauce":"https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80",
+  "Tofu & Bok Choy in Garlic Sauce":"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80",
+  "Mapo Tofu (Light)":"https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=600&q=80",
+  "Japchae":"https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&q=80",
+  "Doenjang Jjigae":"https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80",
+  "Lentil & Spinach Soup":"https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80",
+  "Roasted Sweet Potato & Chickpea Bowl":"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80",
+  "Healthy Vegetable Rice Bowl":"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
+  "Spicy Miso Udon":"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
+  "Chicken Udon Soup":"https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80",
+  "Stir-Fried Udon with Vegetables":"https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80",
+  "Vegetable Lo Mein":"https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80",
+  "Egg Fried Rice":"https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&q=80",
+  "Salmon Onigiri Rice Balls":"https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80",
+  "Cold Soba Noodles":"https://images.unsplash.com/photo-1617196034099-b60f7e2547d0?w=600&q=80",
+  "Korean Kimchi Fried Rice":"https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600&q=80",
+  "Mango Sago":"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80",
+  "Red Bean Soup (Hong Dou Tang)":"https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80",
+  "Patbingsu":"https://images.unsplash.com/photo-1570696516188-ade861b84a49?w=600&q=80",
+  "Fruit Jelly Cups":"https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80",
+  // Woks of Life
+  "Cantonese Steamed Fish":"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80",
+  "Hong Shao Rou (Red Braised Pork Belly)":"https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80",
+  "Wonton Soup":"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
+  "Ong Choy with Fermented Tofu":"https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80",
+  "Scallion Ginger Chicken":"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80",
+  // Just One Cookbook
+  "Oyakodon (Chicken & Egg Rice Bowl)":"https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&q=80",
+  "Japanese Miso Soup":"https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80",
+  "Chicken Katsu":"https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80",
+  "Teriyaki Salmon":"https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80",
+  "Zaru Soba (Cold Soba with Dipping Sauce)":"https://images.unsplash.com/photo-1617196034099-b60f7e2547d0?w=600&q=80",
+  // Fit Foodie Finds
+  "High Protein Chicken Rice Bowl":"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80",
+  "Sheet Pan Chicken & Vegetables":"https://images.unsplash.com/photo-1598103442097-8b74394b95c2?w=600&q=80",
+  "High Protein Overnight Oats":"https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=600&q=80",
+  "Salmon Power Bowl":"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80",
+  // Real Food Dietitians
+  "Anti-Inflammatory Turmeric Chicken Soup":"https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80",
+  "Iron-Rich Lentil & Kale Bowl":"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80",
+  "Baked Lemon Garlic Salmon & Asparagus":"https://images.unsplash.com/photo-1534482421-64566f976cfa?w=600&q=80",
+  "Nourishing Bone Broth Rice Porridge":"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
+  "Ground Beef & Spinach Stir Fry":"https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
+};
+
+const catEmoji = {meat:"🍗",vegetable:"🥬",carb:"🍜",dessert:"🍮"};
+
+
+let currentRecipeCat = 'meat';
+let currentRecipeFilter = 'all';
+
+// ══════════════════════════════════════════
+// RECIPE CATEGORY TABS
+// ══════════════════════════════════════════
+function showRecipeCat(cat, btn) {
+  currentRecipeCat = cat;
+  currentRecipeFilter = 'all';
+  // Update cat tabs
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Show/hide filter rows
+  ['meat','vegetable','carb','dessert'].forEach(c => {
+    document.getElementById(`filters-${c}`).style.display = c === cat ? 'flex' : 'none';
+  });
+  // Reset active filter button
+  const filterRow = document.getElementById(`filters-${cat}`);
+  filterRow.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  renderRecipes(getFilteredRecipes(cat, 'all'));
+}
+
+function filterRecipes(cat, filter, btn) {
+  currentRecipeFilter = filter;
+  const filterRow = document.getElementById(`filters-${cat}`);
+  filterRow.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRecipes(getFilteredRecipes(cat, filter));
+}
+
+function getFilteredRecipes(cat, filter) {
+  let list = recipes.filter(r => r.cat === cat);
+  if (filter === 'all') return list;
+  if (cat === 'meat') {
+    if (filter === 'chicken') return list.filter(r => r.subTags.chicken);
+    if (filter === 'fish') return list.filter(r => r.subTags.fish);
+    if (filter === 'baked') return list.filter(r => r.subTags.baked);
+    if (filter === 'easy') return list.filter(r => r.subTags.easy);
+    return list.filter(r => r.origin.startsWith(filter));
+  }
+  if (cat === 'vegetable') {
+    if (filter === 'easy') return list.filter(r => r.subTags.easy);
+    if (filter === 'baked') return list.filter(r => r.subTags.baked);
+    if (filter === 'hair') return list.filter(r => r.subTags.hair);
+    return list.filter(r => r.origin.startsWith(filter));
+  }
+  if (cat === 'carb') {
+    if (filter === 'udon') return list.filter(r => r.subTags.udon);
+    if (filter === 'noodles') return list.filter(r => r.subTags.noodles);
+    if (filter === 'rice') return list.filter(r => r.subTags.rice);
+    if (filter === 'easy') return list.filter(r => r.subTags.easy);
+    return list.filter(r => r.origin.startsWith(filter));
+  }
+  if (cat === 'dessert') {
+    if (filter === 'fruit') return list.filter(r => r.subTags.fruit);
+    return list.filter(r => r.origin.startsWith(filter));
+  }
+  return list;
+}
+
+// ══════════════════════════════════════════
+// RENDER RECIPES
+// ══════════════════════════════════════════
+function renderRecipes(list) {
+  const grid = document.getElementById('recipe-grid');
+  document.getElementById('recipe-count').textContent = `${list.length} Recipe${list.length !== 1 ? 's' : ''}`;
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🍽</div><div class="empty-text">No recipes match this filter</div></div>';
+    return;
+  }
+  grid.innerHTML = list.map(r => {
+    const imgUrl = recipeImages[r.name];
+    const diffLabel = r.subTags.easy ? '⚡ Easy' : '🔸 Medium';
+    const diffClass = r.subTags.easy ? 'easy' : 'medium';
+    return `
+    <div class="recipe-card">
+      <div class="recipe-img-wrap">
+        ${imgUrl ? `<img class="recipe-img" src="${imgUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none';document.getElementById('ph-${r.name.replace(/\W/g,'_')}').style.display='flex'">` : ''}
+        <div class="recipe-img-placeholder" id="ph-${r.name.replace(/\W/g,'_')}" style="${imgUrl?'display:none':'display:flex'}">${catEmoji[r.cat]||'🍽'}</div>
+        <div class="recipe-img-overlay"></div>
+        <span class="recipe-origin-overlay">${r.origin}</span>
+      </div>
+      <div class="recipe-card-body">
+        <div class="recipe-name">${r.name}</div>
+        <div class="recipe-meta">
+          <span class="meta-pill time">⏱ ${r.time.prep}</span>
+          <span class="meta-pill time">🔥 ${r.time.cook}</span>
+          <span class="meta-pill ${diffClass}">${diffLabel}</span>
+          ${r.subTags.baked ? '<span class="meta-pill easy">🫙 Baked</span>' : ''}
+          ${r.tags.slice(0,1).map(t => `<span class="meta-pill">${t}</span>`).join('')}
+        </div>
+        ${r.mod ? `<div class="recipe-mod">${r.mod}</div>` : ''}
+      </div>
+      <div class="recipe-footer">
+        <div class="recipe-source-text">via ${r.source}</div>
+        <button class="visit-btn" onclick="openRecipe('${r.url}','${r.name.replace(/'/g,"\\'")}',this)">Find Recipe →</button>
+      </div>
+    </div>
+  `}).join('');
+}
+
+async function openRecipe(baseUrl, name, btn) {
+  btn.textContent = 'Searching…';
+  btn.disabled = true;
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:150,
+        messages:[{role:"user",content:`Return the best direct URL for the recipe "${name}" from the site ${baseUrl}. Return ONLY the URL, nothing else.`}]})
+    });
+    const data = await res.json();
+    const url = (data.content[0]?.text?.trim() || baseUrl);
+    window.open(url.startsWith('http') ? url : baseUrl, '_blank');
+  } catch(e) { window.open(baseUrl, '_blank'); }
+  btn.textContent = 'Find Recipe →';
+  btn.disabled = false;
+}
+
+// ══════════════════════════════════════════
+// RENDER DRINKS
+// ══════════════════════════════════════════
+function filterDrinks(f, btn) {
+  document.querySelectorAll('#drink-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const list = f === 'all' ? drinks : drinks.filter(d => d.cat === f);
+  renderDrinks(list);
+}
+
+// Drink images (Unsplash)
+const drinkImages = {
+  "Cold Brew Jasmine Milk Tea":"https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+  "Jasmine Coconut Water":"https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
+  "Grape Jasmine Fruit Tea":"https://images.unsplash.com/photo-1497534446932-c925b458314e?w=600&q=80",
+  "Mango Jasmine Fruit Tea":"https://images.unsplash.com/photo-1546173159-315724a31696?w=600&q=80",
+  "Matcha Coconut Water Latte":"https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&q=80",
+  "Iced Matcha Almond Latte":"https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=600&q=80",
+  "Strawberry Matcha":"https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=600&q=80",
+  "Iced Hojicha Latte":"https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80",
+  "Hojicha Coconut Water":"https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+  "Matcha Soy Milk Latte":"https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?w=600&q=80",
+  "Cold Brew Earl Grey (Fixed)":"https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&q=80",
+  "Hot Jasmine Milk Tea":"https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+  "Pistachio Jasmine Coconut":"https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
+};
+
+function toggleSteps(id) {
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  const open = el.classList.toggle('open');
+  btn.textContent = open ? '▲ Hide steps' : '▼ How to make';
+}
+
+function renderDrinks(list) {
+  const grid = document.getElementById('drink-grid');
+  if (!list.length) { grid.innerHTML = '<div class="empty"><div class="empty-icon">🍵</div><div class="empty-text">No drinks match this filter</div></div>'; return; }
+  grid.innerHTML = list.map((d,i) => {
+    const imgUrl = drinkImages[d.name];
+    const stepsId = `steps-${i}`;
+    return `
+    <div class="drink-card">
+      <div class="drink-img-wrap">
+        ${imgUrl ? `<img class="drink-img" src="${imgUrl}" alt="${d.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="drink-img-placeholder" style="${imgUrl?'display:none':'display:flex'}">🍵</div>
+        <span class="drink-cat-overlay">${d.cat}</span>
+      </div>
+      <div class="drink-body">
+        <div class="drink-name">${d.name}</div>
+        <div class="drink-tags">
+          ${d.tags.map(t=>`<span class="drink-tag">${t}</span>`).join('')}
+          ${d.milks.length ? `<span class="drink-tag">🥛 ${d.milks[0]}${d.milks.length>1?` +${d.milks.length-1}`:''}</span>` : ''}
+        </div>
+        <button class="drink-steps-toggle" onclick="toggleSteps('${stepsId}')">▼ How to make</button>
+        <div class="drink-steps-body" id="${stepsId}">
+          <div class="steps-label">Steps</div>
+          ${d.steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><span>${s}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="drink-footer">${d.inspiration}</div>
+    </div>
+  `}).join('');
+}
+
+// ══════════════════════════════════════════
+// RENDER FOODS
+// ══════════════════════════════════════════
+function filterFoods(f, btn) {
+  document.querySelectorAll('#food-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const list = f === 'all' ? foods : foods.filter(fd => fd.cat === f || fd.goals.includes(f));
+  renderFoods(list);
+}
+
+function renderFoods(list) {
+  const tc = c => ({Protein:"tp",Vegetable:"tv",Grain:"tg","Healthy Fat":"tf",Fruit:"tft"}[c]||"tg");
+  document.getElementById('food-grid').innerHTML = list.map(f => `
+    <div class="food-card">
+      <div class="food-top"><span class="food-emoji">${f.emoji}</span><span class="food-tag ${tc(f.cat)}">${f.cat}</span></div>
+      <div class="food-name">${f.name}</div>
+      <div class="food-origin">${f.origin}</div>
+      <div class="food-why">${f.why}</div>
+      <div class="food-macros">
+        <div class="macro"><div class="macro-val">${f.macros.cal}</div><div class="macro-label">cal</div></div>
+        <div class="macro"><div class="macro-val">${f.macros.pro}g</div><div class="macro-label">protein</div></div>
+        <div class="macro"><div class="macro-val">${f.macros.carb}g</div><div class="macro-label">carbs</div></div>
+        <div class="macro"><div class="macro-val">${f.macros.fat}g</div><div class="macro-label">fat</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function showTab(name) {
+  ['recipes','drinks','foods','scanner','resources'].forEach(t => {
+    document.getElementById(`tab-${t}`).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((btn,i) => {
+    btn.classList.toggle('active', ['recipes','drinks','foods','scanner','resources'][i] === name);
+  });
+}
+
+// ══════════════════════════════════════════
+// SCANNER
+// ══════════════════════════════════════════
+let uploadedImageBase64 = null;
+function handleFile(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { uploadedImageBase64 = ev.target.result.split(',')[1]; document.getElementById('manual-input').placeholder = `📷 Image loaded: ${file.name}\n\nAdd extra items here...`; };
+  reader.readAsDataURL(file);
+}
+function clearScanner() {
+  uploadedImageBase64 = null;
+  document.getElementById('manual-input').value = '';
+  document.getElementById('manual-input').placeholder = 'e.g. chicken thighs, bok choy, shiitake, tofu, frozen udon, ginger, garlic, salmon...';
+  document.getElementById('scan-results').innerHTML = '';
+  document.getElementById('grocery-preview').style.display = 'none';
+  document.getElementById('file-input').value = '';
+}
+async function generateRecipes() {
+  const manual = document.getElementById('manual-input').value.trim();
+  if (!uploadedImageBase64 && !manual) { alert('Please upload a receipt or type ingredients.'); return; }
+  const btn = document.getElementById('scan-btn');
+  btn.disabled = true; btn.textContent = 'Thinking...';
+  document.getElementById('scan-results').innerHTML = '<div class="loading"><div class="spinner"></div><span>Reading ingredients and finding recipes…</span></div>';
+  try {
+    const parts = [];
+    if (uploadedImageBase64) parts.push({type:"image",source:{type:"base64",media_type:"image/jpeg",data:uploadedImageBase64}});
+    parts.push({type:"text",text:`You are a health-focused Asian cooking assistant. User is 26F doing body recomposition, targeting 120-140g protein/day, hair health (iron, zinc, omega-3s, biotin), anti-inflammatory. Shops at 99 Ranch, Safeway, Trader Joe's. Has frozen udon at home.
+${manual ? `Ingredients: ${manual}` : ''}
+${uploadedImageBase64 ? 'Extract all food/ingredient items from the receipt image.' : ''}
+Suggest 5-6 recipes across categories (meat/fish entrees, vegetable dishes, carb-based, 1 healthy dessert if fitting). Prioritize Chinese/Korean/Japanese from omnivorescookbook.com, maangchi.com, cafemaddy.com. Note healthy mods (reduce sodium 25-30%, sugar 30-50%).
+RESPOND ONLY WITH VALID JSON — no markdown, no backticks.
+{"ingredients":["..."],"recipes":[{"name":"","type":"Meat/Fish or Vegetable or Carb-Based or Dessert","origin":"","desc":"2 sentences","ingredients_used":[""],"time":"total time","modification":"specific healthy mod","source":"website name","health_benefits":[""]}]}`});
+    const res = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:parts}]})});
+    const data = await res.json();
+    const text = data.content.map(i=>i.text||'').join('');
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    const prev = document.getElementById('grocery-preview');
+    prev.style.display = 'block';
+    prev.innerHTML = `<div class="grocery-label">Ingredients detected</div><div class="ing-tags">${parsed.ingredients.map(i=>`<span class="ing-tag">${i}</span>`).join('')}</div>`;
+    const typeBadge = t => t==='Dessert'?'rb-d':'rb-e';
+    document.getElementById('scan-results').innerHTML = `
+      <p class="section-label" style="margin-top:20px">${parsed.recipes.length} Recipe Suggestions</p>
+      ${parsed.recipes.map(r=>`
+        <div class="result-card">
+          <div class="result-header"><div class="result-title">${r.name}</div><span class="result-badge ${typeBadge(r.type)}">${r.type}</span></div>
+          <div class="result-body">
+            <p class="result-desc">${r.desc}</p>
+            ${r.time?`<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:8px">⏱ ${r.time}</div>`:''}
+            <div style="font-size:9px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Uses from your groceries</div>
+            <div class="ing-tags" style="margin-bottom:10px">${r.ingredients_used.map(i=>`<span class="ing-tag">${i}</span>`).join('')}</div>
+            ${r.health_benefits?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${r.health_benefits.map(b=>`<span class="meta-pill">${b}</span>`).join('')}</div>`:''}
+            ${r.modification?`<div class="result-mod">✦ ${r.modification}</div>`:''}
+          </div>
+          <div class="result-source">Reference: ${r.source}</div>
+        </div>`).join('')}`;
+  } catch(err) {
+    document.getElementById('scan-results').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Something went wrong. Please try again.</div></div>';
+  }
+  btn.disabled = false; btn.textContent = '✦ Suggest Recipes';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderRecipes(getFilteredRecipes('meat', 'all'));
+renderDrinks(drinks);
+renderFoods(foods);
+</script>
+</body>
+</html>
