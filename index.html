@@ -237,7 +237,7 @@ textarea:focus{border-color:var(--text-primary)}
     <!-- Browse all CTA -->
     <div class="browse-all-cta" onclick="showBrowseAll()">
       <div class="browse-all-left">
-        <div class="browse-all-title">Browse all 75 recipes →</div>
+        <div class="browse-all-title">Browse all 77 recipes →</div>
         <div class="browse-all-sub">Filter by category, cuisine, difficulty, and more</div>
       </div>
       <div class="browse-all-arrow">→</div>
@@ -251,7 +251,7 @@ textarea:focus{border-color:var(--text-primary)}
     <div class="browse-view-header">
       <div>
         <div class="section-title" id="browse-title">All Recipes</div>
-        <div class="section-sub" id="recipe-count">75 recipes</div>
+        <div class="section-sub" id="recipe-count">77 recipes</div>
       </div>
       <button class="browse-back" onclick="showHomeFeed()">← Back to home</button>
     </div>
@@ -564,7 +564,11 @@ const recipes = [
   {name:"Matcha Chia Pudding",origin:"Japanese",cat:"dessert",tags:["Antioxidants","Easy","Vegan","Hair"],subTags:{fruit:false},time:{prep:"5 min",cook:"0 min"},desc:"Chia seeds soaked in matcha-infused coconut milk. Earthy, creamy, antioxidant-packed — a green tea dessert that actually nourishes.",mod:"✦ Zero added sugar — the coconut milk is naturally creamy and satisfying. Top with a few blueberries.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/"},
   {name:"Banana Oat Cookies",origin:"American",cat:"dessert",tags:["Fruit","Easy","Baked","Fiber"],subTags:{fruit:true},time:{prep:"5 min",cook:"15 min"},desc:"2-ingredient banana oat cookies — mashed banana + rolled oats, baked until golden. Add cinnamon or dark chocolate chips if desired. Naturally sweet.",mod:"✦ Zero added sugar — ripe bananas do all the work. Add pumpkin seeds or walnuts for healthy fats and zinc.",source:"Fit Foodie Finds",url:"https://fitfoodiefinds.com/banana-oatmeal-cookies/"},
   {name:"Roasted Sweet Potato with Cinnamon",origin:"American",cat:"dessert",tags:["Fiber","Vitamin A","Baked","Easy"],subTags:{fruit:false},time:{prep:"5 min",cook:"30 min"},desc:"Sweet potato wedges roasted with cinnamon until caramelized and tender. Naturally sweet, beta-carotene rich — a dessert that supports hair and skin health.",mod:"✦ No sugar needed — sweet potatoes caramelize naturally. A pinch of sea salt enhances sweetness.",source:"The Real Food Dietitians",url:"https://therealfooddietitians.com"},
-  {name:"Coconut Mango Sticky Rice (Light)",origin:"Thai",cat:"dessert",tags:["Fruit","Gluten-Free","Rice"],subTags:{fruit:true},time:{prep:"10 min",cook:"25 min"},desc:"Glutinous rice steamed in light coconut milk, served with fresh mango. A lighter take on the Thai classic — still creamy and satisfying.",mod:"✦ Use light coconut milk, reduce sugar by 50%. Ripe mango provides most of the sweetness naturally.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com"}
+  {name:"Coconut Mango Sticky Rice (Light)",origin:"Thai",cat:"dessert",tags:["Fruit","Gluten-Free","Rice"],subTags:{fruit:true},time:{prep:"10 min",cook:"25 min"},desc:"Glutinous rice steamed in light coconut milk, served with fresh mango. A lighter take on the Thai classic — still creamy and satisfying.",mod:"✦ Use light coconut milk, reduce sugar by 50%. Ripe mango provides most of the sweetness naturally.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com"},
+
+  // ── CELINE'S OWN — HOMEY FAVORITES ──
+  {name:"Asian Marinated Baked Salmon & Asparagus",origin:"Japanese",cat:"meat",tags:["High Protein","Omega-3s","Hair","Baked","Easy"],subTags:{chicken:false,fish:true,baked:true,easy:true},time:{prep:"10 min",cook:"15 min"},desc:"Celine's own: salmon marinated in soy, garlic, ginger and sesame, baked with garlic asparagus and served over peppery arugula with avocado. ~39g protein. Add 3/4 cup pasta tossed in the pan juices for the pasta version (~44g protein).",mod:"✦ Low-sodium soy cut 25% to 1 1/2 tbsp, honey cut to 1 tsp, oil 1 tsp per pan. Arugula and avocado need no dressing — pan juices are the sauce.",source:"Celine's Kitchen",url:"https://celineyan.me/cookbook/"},
+  {name:"Soy Garlic Chicken Drumsticks & Roasted Veg",origin:"Chinese",cat:"meat",tags:["High Protein","Chicken","Baked","Easy"],subTags:{chicken:true,fish:false,baked:true,easy:true},time:{prep:"10 min",cook:"40 min"},desc:"Celine's own: drumsticks marinated in soy and garlic, roasted with zucchini and crispy fingerling potatoes on one pan. Potatoes start 15 min early cut-side down, zucchini goes in last so it caramelizes. ~36g protein.",mod:"✦ Low-sodium soy cut 25%, honey 1 tsp only, oil 1 tsp for the veg. Skin removed after baking saves ~70 cal.",source:"Celine's Kitchen",url:"https://celineyan.me/cookbook/"}
 ];
 
 const drinks = [
@@ -695,7 +699,9 @@ const recipeImages = {
   "Matcha Chia Pudding":"https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80",
   "Banana Oat Cookies":"https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&q=80",
   "Roasted Sweet Potato with Cinnamon":"https://images.unsplash.com/photo-1543339308-43e59d6b73a6?w=600&q=80",
-  "Coconut Mango Sticky Rice (Light)":"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80"
+  "Coconut Mango Sticky Rice (Light)":"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80",
+  "Asian Marinated Baked Salmon & Asparagus":"https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80",
+  "Soy Garlic Chicken Drumsticks & Roasted Veg":"https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80"
 };
 
 const catEmoji = {meat:"🍗",vegetable:"🥬",carb:"🍜",dessert:"🍮"};
