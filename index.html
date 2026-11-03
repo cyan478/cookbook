@@ -237,7 +237,7 @@ textarea:focus{border-color:var(--text-primary)}
     <!-- Browse all CTA -->
     <div class="browse-all-cta" onclick="showBrowseAll()">
       <div class="browse-all-left">
-        <div class="browse-all-title">Browse all 81 recipes →</div>
+        <div class="browse-all-title">Browse all 83 recipes →</div>
         <div class="browse-all-sub">Filter by category, cuisine, difficulty, and more</div>
       </div>
       <div class="browse-all-arrow">→</div>
@@ -251,7 +251,7 @@ textarea:focus{border-color:var(--text-primary)}
     <div class="browse-view-header">
       <div>
         <div class="section-title" id="browse-title">All Recipes</div>
-        <div class="section-sub" id="recipe-count">81 recipes</div>
+        <div class="section-sub" id="recipe-count">83 recipes</div>
       </div>
       <button class="browse-back" onclick="showHomeFeed()">← Back to home</button>
     </div>
@@ -574,7 +574,11 @@ const recipes = [
   {name:"Braised Chicken with Chestnuts",origin:"Chinese",cat:"meat",tags:["High Protein","Iron","Hair","Comfort"],subTags:{chicken:true,fish:false,baked:false,easy:false},time:{prep:"15 min",cook:"35 min"},desc:"Cozy Chinese family stew: boneless chicken thighs braised with shiitake and chestnuts (the potato-like, slightly sweet starch) until bubbling. 477 cal, 36g protein. Frozen peeled chestnuts are stocked year-round at 99 Ranch.",mod:"✦ Cut oil to 1 tbsp total, low-sodium soy. No added sugar in the recipe — barely needs any mod.",source:"Woks of Life",url:"https://thewoksoflife.com/wprm_print/braised-chicken-with-chestnuts/"},
   {name:"Nikujaga (Meat & Potato Stew)",origin:"Japanese",cat:"meat",tags:["High Protein","Iron","Comfort","Easy"],subTags:{chicken:false,fish:false,baked:false,easy:true},time:{prep:"15 min",cook:"15 min"},desc:"The taste of Japanese home cooking: thin-sliced beef and potatoes simmered in soy, sake, mirin and dashi with shirataki noodles. Better the next day. Rest 30 min off the heat before serving.",mod:"✦ Double the beef (1 lb lean) to clear ~30g protein. Low-sodium soy 4 tbsp → 3 tbsp, sugar 1 tbsp → 1/2 tbsp, oil → 1 tsp.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/nikujaga/"},
   {name:"Jjimdak (Braised Chicken & Noodles)",origin:"Korean",cat:"meat",tags:["High Protein","Chicken","Comfort"],subTags:{chicken:true,fish:false,baked:false,easy:false},time:{prep:"20 min",cook:"40 min"},desc:"Andong-style braised chicken thighs with potatoes, carrots, mushrooms and glass noodles in a savory, slightly sweet soy-garlic-ginger sauce. Her drumstick dinner, braised in one pot instead of roasted.",mod:"✦ Rice syrup 1/4 cup → 1-2 tbsp, vegetable oil 1/4 cup → 1 tbsp, low-sodium soy. Swap white mushrooms for shiitake for the hair bonus.",source:"Maangchi",url:"https://www.maangchi.com/recipe/dakjjim"},
-  {name:"Mom's Best Braised Chicken with Mushrooms",origin:"Chinese",cat:"meat",tags:["High Protein","Iron","Hair","Comfort"],subTags:{chicken:true,fish:false,baked:false,easy:false},time:{prep:"10 min",cook:"70 min"},desc:"Northern Chinese home-style red-braise: bone-in chicken simmered with dried shiitake until the sauce turns glossy — the mushrooms soak up the broth and become the highlight. 374 cal, 25.7g protein as written; a slightly larger portion clears 30g. Freezes well.",mod:"✦ Low-sodium soy versions, sugar 1 tsp → 1/2 tsp. Use skinless leg/thigh or skim the fat. Shiitake brings zinc and selenium for hair.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/moms-best-braised-chicken-with-mushrooms/"}
+  {name:"Mom's Best Braised Chicken with Mushrooms",origin:"Chinese",cat:"meat",tags:["High Protein","Iron","Hair","Comfort"],subTags:{chicken:true,fish:false,baked:false,easy:false},time:{prep:"10 min",cook:"70 min"},desc:"Northern Chinese home-style red-braise: bone-in chicken simmered with dried shiitake until the sauce turns glossy — the mushrooms soak up the broth and become the highlight. 374 cal, 25.7g protein as written; a slightly larger portion clears 30g. Freezes well.",mod:"✦ Low-sodium soy versions, sugar 1 tsp → 1/2 tsp. Use skinless leg/thigh or skim the fat. Shiitake brings zinc and selenium for hair.",source:"Omnivore's Cookbook",url:"https://omnivorescookbook.com/moms-best-braised-chicken-with-mushrooms/"},
+
+  // ── MISO COD + PONZU SALMON — NOV 2026 ──
+  {name:"Miso Cod (Saikyo Yaki)",origin:"Japanese",cat:"meat",tags:["Omega-3s","Hair","High Protein","Baked"],subTags:{chicken:false,fish:true,baked:true,easy:false},time:{prep:"10 min",cook:"20 min"},desc:"The Nobu-famous Kyoto classic: black cod salt-cured 30 min, then marinated 2-3 days in Saikyo sweet white miso, mirin and sake — no soy, no honey — wiped clean and baked until silky. Make-ahead by design; marinated fillets freeze 2-3 weeks. JOC notes salmon and sea bass work in the same marinade.",mod:"✦ Zero oil as written. With regular white miso instead of Saikyo, cut the optional sugar 1 tbsp → 1-1 1/2 tsp; with real Saikyo miso, skip sugar entirely.",source:"Just One Cookbook",url:"https://www.justonecookbook.com/wprm_print/miso-cod-black-cod-with-miso"},
+  {name:"Ponzu Marinated Salmon",origin:"Japanese",cat:"meat",tags:["Omega-3s","Hair","High Protein","Easy"],subTags:{chicken:false,fish:true,baked:false,easy:true},time:{prep:"25 min",cook:"7 min"},desc:"Salmon marinated 20 min in ponzu, grated ginger, garlic and lemon, pan-seared, then the marinade is boiled down 1-2 min into a glossy sauce. Bright, citrusy, weeknight-fast — a true marinade, not a table drizzle.",mod:"✦ Scale to two 6 oz fillets to clear ~35g protein (the original serves 2 on one 8 oz fillet). Sugar 1 tsp → 1/2 tsp, low-sodium ponzu or homemade lemon + low-sodium soy cut 25%. Oil is already just 1 tsp.",source:"Kikkoman",url:"https://kikkomanusa.com/recipes/ginger-ponzu-salmon/"}
 ];
 
 const drinks = [
@@ -711,7 +715,9 @@ const recipeImages = {
   "Braised Chicken with Chestnuts":"https://images.unsplash.com/photo-1598103442097-8b74394b95c2?w=600&q=80",
   "Nikujaga (Meat & Potato Stew)":"https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
   "Jjimdak (Braised Chicken & Noodles)":"https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80",
-  "Mom's Best Braised Chicken with Mushrooms":"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80"
+  "Mom's Best Braised Chicken with Mushrooms":"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80",
+  "Miso Cod (Saikyo Yaki)":"https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80",
+  "Ponzu Marinated Salmon":"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80"
 };
 
 const catEmoji = {meat:"🍗",vegetable:"🥬",carb:"🍜",dessert:"🍮"};
